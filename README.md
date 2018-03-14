@@ -1,1 +1,4 @@
-# advanced_content_runtime_chef
+# camc-content-runtimes
+camc-content-runtimes
+
+Copyright IBM Corp. 2017, 2017
