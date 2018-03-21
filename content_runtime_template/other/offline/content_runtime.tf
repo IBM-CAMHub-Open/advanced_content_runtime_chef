@@ -497,6 +497,8 @@ LOG_FILE="$CONFIG_PATH/.advanced-runtime-config/verification.log"
 CHEF_FILE="$CONFIG_PATH/.advanced-runtime-config/chef-install.log"
 DOCKER_LOG="$CONFIG_PATH/.advanced-runtime-config/docker_ps.log"
 
+mkdir -p "$CONFIG_PATH/.advanced-runtime-config"
+
 . $CONFIG_PATH/utilities.sh
 
 log_firewall() {
@@ -744,6 +746,7 @@ function verify_software_repo_directory()
   FAIL_COUNT=0
   mkdirFile=$CONFIG_PATH/mkdir.properties
   ABS_PATH="/var/swRepo/private"
+
   set `cat $mkdirFile | egrep -v "^#"`
   while test $# -gt 0 ; do
     sudo docker exec -i camc-sw-repo /bin/bash -c "ls $ABS_PATH/$1 2> /dev/null > /dev/null"
@@ -794,11 +797,28 @@ function verify_docker_ps_log()
   sudo docker system info 2>1 | xargs -i echo [INFORMATIONAL] [docker system info] {} >> $LOG_FILE
 }
 
+function format_disk_output()
+{
+  local fs=$1
+  local msg=$2
+  local checkfs=$1
+  [[ -z "$checkfs" ]] && checkfs="/"
+
+  echo "[INFORMATIONAL] ========================================================================================================"
+  [[ -d "$checkfs" ]] &&  { sudo df -h $fs | egrep "^/dev/|^File" | xargs -i echo "[INFORMATIONAL] $msg : $fs : {}" | tee -a $LOG_FILE ; } || { echo "[INFORMATIONAL] file: $fs not found, used for : $2" | tee -a $LOG_FILE ; }
+}
 function disk_configuration()
 {
-  sudo df -h | egrep "^/dev/|^File" | xargs -i echo "[INFORMATIONAL] {}" | tee -a $LOG_FILE
-  sudo df -h /var/lib/docker/tmp | egrep "^/dev/|^File" | xargs -i echo "[INFORMATIONAL] Offline expansion : /var/lib/docker/tmp {}" | tee -a $LOG_FILE
-  sudo df -h ~ | egrep "^/dev/|^File" | xargs -i echo "[INFORMATIONAL] home : `echo ~` {}" | tee -a $LOG_FILE
+  format_disk_output "" "File System"
+  format_disk_output ~ "Current user"
+  format_disk_output "/opt/opscode" "Chef Server"
+  format_disk_output "/var/opt/opscode" "Chef Dependencies"
+  format_disk_output "/var/lib/docker" "Docker"
+  format_disk_output "/opt/ibm/docker" "Runtime docker container"
+  format_disk_output "/usr/bin" "Docker/Chef commands"
+  format_disk_output "/tmp" "terraform/python tmp"
+  format_disk_output "/opt/ibm/docker/software-repo/var/swRepo/private" "Software Repo"
+  echo "[INFORMATIONAL] ========================================================================================================"
   sudo lsblk >> $LOG_FILE
 }
 
@@ -1339,7 +1359,7 @@ function find_disk()
 {
   # Will return an unallocated disk, it will take a sorting order from largest to smallest, allowing a the caller to indicate which disk
   [[ -z "$1" ]] && whichdisk=1 || whichdisk=$1
-  local readonly=`parted -l | egrep -i "Warning:" | tr ' ' '\n' | egrep "/dev/" | sort -u | xargs -i echo "{}|" | xargs echo "NONE|" | tr -d ' ' | rev | cut -c2- | rev`
+  local readonly=`sudo parted -l | egrep -i "Warning:" | tr ' ' '\n' | egrep "/dev/" | sort -u | xargs -i echo "{}|" | xargs echo "NONE|" | tr -d ' ' | rev | cut -c2- | rev`
   diskcount=`sudo parted -l 2>&1 | egrep -v "$readonly" | egrep -c -i 'ERROR: '`
   if [ "$diskcount" -lt "$whichdisk" ] ; then
         echo ""
@@ -1910,11 +1930,12 @@ resource "null_resource" "call_launcher" {
   depends_on = ["null_resource.singlenode"]
 
   triggers {
-    private_key_changed = "${var.ibm_pm_private_ssh_key}",
-    public_key_changed  = "${var.ibm_pm_public_ssh_key}",
-    repo_pass_changed   = "${var.ibm_sw_repo_password}",
-    repo_port_changed        = "${var.ibm_sw_repo_port}",
-    repo_secure_port_changed = "${var.ibm_sw_repo_secure_port}",
+private_key_changed = "${var.ibm_pm_private_ssh_key}",
+public_key_changed  = "${var.ibm_pm_public_ssh_key}",
+pm_key_name_changed  = "${var.ibm_pm_public_ssh_key_name}",
+repo_pass_changed   = "${var.ibm_sw_repo_password}",
+repo_port_changed        = "${var.ibm_sw_repo_port}",
+repo_secure_port_changed = "${var.ibm_sw_repo_secure_port}",
     cr_instance_ids = "${join(",", null_resource.singlenode.*.id)}"
   }
 
@@ -1949,7 +1970,7 @@ resource "null_resource" "call_launcher" {
   output "ibm_im_repo_password" {
   value = "${var.ibm_sw_repo_password}" }
   output "template_timestamp" {
-  value = "2018-03-13 22:08:12" }
+  value = "2018-03-20 21:18:10" }
 ### End Other output variables
 
 output "runtime_hostname" { value = "${var.runtime_hostname}"}

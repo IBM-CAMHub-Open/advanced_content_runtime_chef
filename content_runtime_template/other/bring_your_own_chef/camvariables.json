@@ -403,7 +403,7 @@
   "name": "template_timestamp_hidden",
   "type": "string",
   "description": "Internal automatically updated variable containing the Content Runtime template timestamp",
-  "default": "2018-03-13 22:08:06",
+  "default": "2018-03-20 21:18:04",
   "hidden": true,
   "label": "Template Timestamp",
   "group_name": "additional_settings",

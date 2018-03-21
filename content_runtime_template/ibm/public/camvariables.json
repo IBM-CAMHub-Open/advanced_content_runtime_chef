@@ -403,7 +403,7 @@
   "name": "template_timestamp_hidden",
   "type": "string",
   "description": "Internal automatically updated variable containing the Content Runtime template timestamp",
-  "default": "2018-03-13 22:07:36",
+  "default": "2018-03-20 21:17:33",
   "hidden": true,
   "label": "Template Timestamp",
   "group_name": "additional_settings",
@@ -575,11 +575,11 @@
     "immutable": false,
     "options": [{
       "default": true,
-      "value": "true",
-      "label": "True"
-      }, {
       "value": "false",
       "label": "False"
+      }, {
+      "value": "true",
+      "label": "True"
     }]
   },
   {
@@ -1333,9 +1333,9 @@
     "required": false,
     "immutable": false,
     "options": [{
-      "label": "True"
-      }, {
       "label": "False"
+      }, {
+      "label": "True"
     }]
   },
   {

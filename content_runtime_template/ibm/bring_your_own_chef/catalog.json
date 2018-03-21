@@ -1,7 +1,7 @@
  {
     "name": "IBM - CAM Content Runtime with existing Chef Server",
     "description": "IBM Resource to instantiate CAM Content Runtime.",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "imageUrl": "./assets/svg/IBM_WebSphere_Standalone.svg",
     "image": "tp_WAS_standalone.png",
     "type": "ContentRuntime",
@@ -33,7 +33,7 @@
        },
        {
          "title": "Template version",
-         "description": "2.0.0<br>"
+         "description": "2.0.1<br>"
        },
        {
          "title": "Operating systems supported",
