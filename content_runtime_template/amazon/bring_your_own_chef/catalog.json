@@ -1,7 +1,7 @@
  {
     "name": "AWS - CAM Content Runtime with existing Chef Server",
     "description": "AWS Resource to instantiate CAM Content Runtime.",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "imageUrl": "./assets/svg/IBM_WebSphere_Standalone.svg",
     "image": "tp_WAS_standalone.png",
     "type": "ContentRuntime",
@@ -33,7 +33,7 @@
        },
        {
          "title": "Template version",
-         "description": "2.0.1<br>"
+         "description": "2.0.2<br>"
        },
        {
          "title": "Operating systems supported",

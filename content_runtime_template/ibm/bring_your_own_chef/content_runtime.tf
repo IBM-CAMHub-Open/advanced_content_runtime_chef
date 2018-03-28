@@ -332,7 +332,7 @@ if [ ! -e `dirname $0`/.advanced-runtime-config/sshkeyverified ] ; then
 
   PM_PRIVATE_KEY=`ssh-keygen -y -f key.decoded | head -n1 | cut -d " " -f2`
   if [[ $PM_PUBLIC_KEY == $PM_PRIVATE_KEY ]]; then
-    echo "[*] The provided SSH keys for Pattern Manager were validated succesfully."
+    echo "[*] The provided SSH keys for Pattern Manager were validated successfully."
   else
     echo "[ERROR] The provided SSH public and private keys for Pattern Manager do not match, please provide a matching pair of keys."
     exit 1
@@ -360,15 +360,15 @@ fi
 
 # Get Docker EE repo URL
 if ! command_exists docker; then
-  if [ -n $PARAM_DOCKEREE ]; then
-    DOCKER_EE_REPO=$PARAM_DOCKEREE
-    echo "[*] Identified Docker EE repository: $PARAM_DOCKEREE"
-  else
+  if [ -z "$PARAM_DOCKEREE" ]; then
     echo "[*] No Docker EE repository provided"
     if [[ $PLATFORM == *"rhel"* ]] && [ -n $PARAM_DOCKER ]; then
       echo "[ERROR] Docker CE for Red Hat Enterprise is not supported, please provide a valid Docker EE repository URL"
       exit 1
     fi
+  else
+    DOCKER_EE_REPO=$PARAM_DOCKEREE
+    echo "[*] Identified Docker EE repository: $PARAM_DOCKEREE"
   fi
 fi
 
@@ -726,12 +726,16 @@ verify_sw_repo() {
 
 verify_pattern_manager_connection() {
   CHEF_IP=`cat $PARAM_FILE | egrep "chef_ip" | cut -f2 -d"="`
+  BYOCHEF=`cat $PARAM_FILE | egrep "byochef" | cut -f2 -d"="`
   if [ -z "$CHEF_IP" ]; then
     CHEF_IP=`cat $PARAM_FILE | egrep "static_ip_address" | cut -f2 -d"="`
   fi
   sudo docker exec -i camc-pattern-manager /bin/bash -c "nc -v -w 30 -z $CHEF_IP 443"
   if [ $? -gt 0 ]; then
     echo "[ERROR] Couldn't establish a connection between Pattern Manager and host using port 443" | tee -a $LOG_FILE
+    if [[ $BYOCHEF == "true" ]]; then
+      echo "[ERROR] There might have been an error communicating with the provided Chef Server. Please check the provided IP address, FQDN and PEM file and try again."
+    fi
     log_firewall
     exit 1
   else
@@ -766,6 +770,7 @@ verify_chef() {
       if [ $? -gt 0 ]; then
         sudo /usr/bin/chef-server-ctl status | tee -a $LOG_FILE
         echo "[ERROR] The Chef server nodes are not running correctly" | tee -a $LOG_FILE
+        exit 1
       fi
       let ATTEMPT=ATTEMPT+1
       sleep 1
@@ -783,12 +788,12 @@ verify_cookbooks() {
     LOOPIT=0; LOOPCOUNT=0
   	while test $LOOPIT -eq 0 # We need to loop because chef sometimes returns bad data, the response code is not 200, we will retry a few times to get past the error
   	do
-  	  CHECK=`curl -s -k --write-out %{http_code} --output cookbooks.out -H "Authorization:Bearer $PM_ACCESSTOKEN" -X GET https://$IPADDR:5443/v1/info/chef`
+  	  CHECK=`curl --max-time 120 -s -k --write-out %{http_code} --output cookbooks.out -H "Authorization:Bearer $PM_ACCESSTOKEN" -X GET https://$IPADDR:5443/v1/info/chef`
       if [ "$CHECK" == 200 ]; then
         LOOPIT=1
       else
         let 'LOOPCOUNT=LOOPCOUNT+1'
-        if [ "$LOOPCOUNT" = "10" ]; then
+        if [ "$LOOPCOUNT" = "5" ]; then
           LOOPIT=1
         fi
       fi
@@ -799,7 +804,7 @@ verify_cookbooks() {
       echo "curl -k --write-out %{http_code} --output cookbooks.out -H 'Authorization:Bearer $PM_ACCESSTOKEN' -X GET https://$IPADDR:5443/v1/info/chef" >> $LOG_FILE
       echo "[ERROR] There was a problem verifying Chef Cookbooks" | tee -a $LOG_FILE
       if [ "$CHECK" == 401 ]; then
-        echo "[ERROR] There seems to be an issue with the configured permissions in the server/docker images"
+        echo "[ERROR] There seems to be an issue with the configured permissions in the server/Docker images"
         exit 1
       fi
   	fi
@@ -837,7 +842,6 @@ verify_cookbooks() {
 
 function verify_software_repo_directory()
 {
-
   # This is a verification of the repo directories from the repo
   FAIL_COUNT=0
   mkdirFile=$CONFIG_PATH/mkdir.properties
@@ -856,9 +860,7 @@ function verify_software_repo_directory()
      echo "[ERROR] Software repo docker $ABS_PATH is not setup as expected, see previous message. This could be a permission problem in the docker container" | tee -a $LOG_FILE
   else
     echo "[SUCCESS] Software repo docker container $ABS_PATH is setup as expected" | tee -a $LOG_FILE
-
   fi
-
 }
 
 function verify_software_directory()
@@ -1819,6 +1821,9 @@ CONFIG_FILE="$CONFIG_PATH/config.json"
 CAM_RUNTIME_KEY_FILE=$CONFIG_PATH/cam_runtime_key_`hostname`
 EXISTING_CAM_PRIVATE_KEY=""
 EXISTING_PORT=""
+EXISTING_CHEF_IP=""
+EXISTING_CHEF_PEM=""
+EXISTING_CHEF_FQDN=""
 UPDATE_VM_PUBLIC_KEYS=""
 if [ ! -z "$CAM_PRIVATE_KEY_ENC" ] && [ -e "$CAM_RUNTIME_KEY_FILE" ]; then
     echo "Pattern manager key exists"
@@ -1827,10 +1832,23 @@ fi
 if [ -e "$CONFIG_FILE" ]; then
     echo "Pattern manager config file exists"
     EXISTING_PORT=`base64 --decode $CONFIG_FILE | grep -Po '"software_repo_unsecured_port":.*?",' | cut -f2 -d' ' | cut -f2 -d\"`
+    EXISTING_CHEF_ADMIN=`base64 --decode $CONFIG_FILE | grep -Po '"admin_id":.*?",' | cut -f2 -d' ' | cut -f2 -d\"`
+    EXISTING_CHEF_ORG=`base64 --decode $CONFIG_FILE | grep -Po '"org":.*?",' | cut -f2 -d' ' | cut -f2 -d\"`
+
+    if [[ "$BYOCHEF" == "true" ]]; then
+      EXISTING_CHEF_IP=`base64 --decode $CONFIG_FILE | grep -Po '"ip":.*?",' | cut -f2 -d' ' | cut -f2 -d\"`
+      EXISTING_CHEF_PEM=`base64 --decode $CONFIG_FILE | grep -Po '"pem":.*?",' | cut -f2 -d' ' | cut -f2 -d\"`
+      EXISTING_CHEF_FQDN=`base64 --decode $CONFIG_FILE | grep -Po '"fqdn":.*?",' | cut -f2 -d' ' | cut -f2 -d\"`
+      CHEF_HOST_FQDN=$CHEF_FQDN
+    else
+      EXISTING_CHEF_IP=$CHEF_IPADDR
+      EXISTING_CHEF_PEM=$CHEF_PEM
+      EXISTING_CHEF_FQDN=$CHEF_HOST_FQDN
+    fi
 fi
 
-if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_KEY" ] || [ "$EXISTING_PORT" != "$SOFTWARE_REPO_PORT" ]; then
-    echo "Creating Config Directory"
+if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_KEY" ] || [ "$EXISTING_PORT" != "$SOFTWARE_REPO_PORT" ] || [ "$EXISTING_CHEF_IP" != "$CHEF_IPADDR" ] || [ "$EXISTING_CHEF_PEM" != "$CHEF_PEM" ] || [ "$EXISTING_CHEF_FQDN" != "$CHEF_HOST_FQDN" ] || [ "$EXISTING_CHEF_ADMIN" != "$CHEF_ADMIN" ] || [ "$EXISTING_CHEF_ORG" != "$CHEF_ORG" ]; then
+    echo "[*] Creating Pattern Manager config directory"
     sudo mkdir -p $CONFIG_PATH
 
     #If we are updating the keys, get the existing public key
@@ -1866,7 +1884,7 @@ if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_K
       UPDATE_VM_PUBLIC_KEYS="true"
     fi
 else
-    echo "Config File Already Exists in the Path"
+    echo "[*] Pattern Manager configuration file already exists in the path"
 fi
 
 # Add the users key to the authorized keys on the system
@@ -1993,6 +2011,14 @@ if [[ "$INSTALL_COOKBOOKS" == "true" ]]; then
     	echo curl --write-out %{http_code} --output /dev/null --request POST -k -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization:Bearer $PATTERN_MGR_ACCESS_TOKEN" https://localhost:5443/v1/upload/chef/git_hub --data @$runtimepath/load.json
     	response=`curl --write-out %{http_code} --output /dev/null --request POST -k -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization:Bearer $PATTERN_MGR_ACCESS_TOKEN" https://localhost:5443/v1/upload/chef/git_hub --data @$runtimepath/load.json`
     	echo "Return from the curl command : $response"
+      if [ $response != 200 ]; then
+        if [[ "$BYOCHEF" == "true" ]]; then
+          echo "[ERROR] There was an error communicating with the provided Chef Server. Please check the provided IP address, FQDN and PEM file and try again."
+        else
+          echo "[ERROR] There was an error communicating with the installed Chef server."
+        fi
+        exit 1
+      fi
     	curl -k -H "Authorization:Bearer $PATTERN_MGR_ACCESS_TOKEN" -X GET https://localhost:5443/v1/info/chef
     fi
   fi
@@ -2032,6 +2058,11 @@ pm_key_name_changed  = "${var.ibm_pm_public_ssh_key_name}",
 repo_pass_changed   = "${var.ibm_sw_repo_password}",
 repo_port_changed        = "${var.ibm_sw_repo_port}",
 repo_secure_port_changed = "${var.ibm_sw_repo_secure_port}",
+chef_fqdn_changed   = "${var.chef_fqdn}",
+chef_ip_changed     = "${var.chef_ip}",
+chef_pem_changed    = "${var.chef_pem}",
+chef_org_changed    = "${var.chef_org}",
+chef_admin_changed    = "${var.chef_admin}",
     cr_instance_ids = "${join(",", ibm_compute_vm_instance.single-node.*.id)}"
   }
 
@@ -2069,7 +2100,7 @@ repo_secure_port_changed = "${var.ibm_sw_repo_secure_port}",
   output "ibm_im_repo_password" {
   value = "${var.ibm_sw_repo_password}" }
   output "template_timestamp" {
-  value = "2018-03-20 21:17:39" }
+  value = "2018-03-28 15:22:18" }
 
 ### End IBM output variables
 output "runtime_hostname" { value = "${var.runtime_hostname}"}
