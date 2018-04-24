@@ -19,6 +19,7 @@
  variable "ibm_contenthub_git_host" { type = "string" }
  variable "ibm_contenthub_git_organization" { type = "string" }
  variable "ibm_openhub_git_organization" { type = "string" }
+ variable "offline_installation" { type = "string" }
  variable "docker_ee_repo" { type = "string" }
  variable "chef_org" { type = "string" }
  variable "chef_admin" { type = "string" }
@@ -61,6 +62,7 @@
  variable "network_visibility" { type = "string" }
  variable "prereq_strictness" { type = "string" }
  variable "portable_private_ip" { type = "string" }
+ variable "encryption_passphrase" { type = "string" }
  variable "installer_docker" { type = "string" }
  variable "installer_docker_compose" { type = "string" }
  variable "sw_repo_image" { type = "string" }
@@ -239,35 +241,6 @@ if [ $? -ne "0" ]; then
   exit 1
 fi
 
-# Check for the cloud provider
-CLOUD_PROVIDER=$(sudo dmidecode -s bios-version)
-
-echo "[*] Updating packages"
-# Check if the script is being run as root
-if [[ $PLATFORM == *"ubuntu"* ]]; then
-  wait_apt_lock
-  PACKAGE_MANAGER=apt-get
-  if { sudo -n apt-get -qqy update 2>&1 || echo E: update failed; } | grep -q '^[W]:'; then
-    echo "[ERROR] There was an error obtaining the latest packages"
-  fi
-else
-  PACKAGE_MANAGER=yum
-  if { sudo -n yum -y update 2>&1 || echo E: update failed; } | grep -q '^[W]:'; then
-    echo "[ERROR] There was an error obtaining the latest packages"
-  fi
-fi
-if [ $? -ne "0" ]; then
-  echo "[ERROR] This script requires $PACKAGE_MANAGER permissions for executing"
-  exit 1
-fi
-
-# Check if there is at least 1GB of disk available
-FREE_MEM=`df -k --output=avail "$PWD" | tail -n1`
-if [ $FREE_MEM -lt 5242880 ]; then # 1GB = 1024 * 1024
-  echo "[ERROR] This script requires at least 5GB of available disk space"
-  exit 1
-fi
-
 # Get script parameters
 while test $# -gt 0 ; do
   [[ $1 =~ ^-m|--mode ]] && { PARAM_MODE="$2"; shift 2; continue; };
@@ -278,8 +251,48 @@ while test $# -gt 0 ; do
   [[ $1 =~ ^-o|--compose ]] && { PARAM_DOCKER_COMPOSE="$2"; shift 2; continue; };
   [[ $1 =~ ^-d|--docker ]] && { PARAM_DOCKER="$2"; shift 2; continue; };
   [[ $1 =~ ^-b|--byochef ]] && { PARAM_BYOCHEF="$2"; shift 2; continue; };
+  [[ $1 =~ ^-f|--offline ]] && { PARAM_OFFLINE="$2"; shift 2; continue; };
   break;
 done
+
+# Check for the cloud provider
+CLOUD_PROVIDER=$(sudo dmidecode -s bios-version)
+
+if [[ "$PARAM_OFFLINE" == "true" ]]; then
+  echo "[*] Starting offline installation"
+else
+  echo "[*] Updating packages"
+  # Check if the script is being run as root
+  if [[ $PLATFORM == *"ubuntu"* ]]; then
+    wait_apt_lock
+    PACKAGE_MANAGER=apt-get
+    if { sudo -n apt-get -qqy update 2>&1 || echo E: update failed; } | grep -q '^[W]:'; then
+      echo "[ERROR] There was an error obtaining the latest packages"
+    fi
+  else
+    PACKAGE_MANAGER=yum
+    if { sudo -n yum -y update 2>&1 || echo E: update failed; } | grep -q '^[W]:'; then
+      echo "[ERROR] There was an error obtaining the latest packages"
+    fi
+  fi
+  if [ $? -ne "0" ]; then
+    echo "[ERROR] This script requires $PACKAGE_MANAGER permissions for executing"
+    exit 1
+  fi
+fi
+
+echo "[*] Checking available space"
+# Check if there is at least 1GB of disk available
+FREE_MEM=`df -k --output=avail "$PWD" | tail -n1`
+if [ $FREE_MEM -lt 5242880 ]; then # 1GB = 1024 * 1024
+  echo "[WARNING] This script requires at least 5GB of available disk space in $PWD, errors may occur during installation"
+fi
+
+# Check if there is at least 1GB of disk on /opt
+FREE_MEM=`df -k --output=avail "/opt" | tail -n1`
+if [ $FREE_MEM -lt 2097152 ]; then
+  echo "[WARNING] This script requires at least 2GB of available disk space in /opt for Chef Server, errors may occur during installation"
+fi
 
 # Check if strict mode is enabled, if it is, the program will not attempt to install requirements
 MODE="lenient"
@@ -1552,6 +1565,7 @@ DOCKER_IMAGE_PATH="opencontent"
 COOKBOOKS_FILE="/var/IBM-CAMHub-Open.tar"
 
 BYOCHEF=false
+OFFLINE_INSTALL=false
 CHEF_ADMIN="chef-admin"
 CHEF_IPADDR=""
 CHEF_PEM=""
@@ -1565,6 +1579,7 @@ CHEF_SSL_CERT_COUNTRY=''
 CHEF_SSL_CERT_STATE=''
 CHEF_SSL_CERT_CITY=''
 
+ENCRYPTION_PASSPHRASE=""
 NFS_SERVER_IP_ADDR="format"
 DOCKER_REGISTRY_USER=""
 DOCKER_REGISTRY_TOKEN=""
@@ -1616,6 +1631,7 @@ while IFS='' read -r parameter || [[ -n "$parameter" ]]; do
         [[ $parameter =~ ^-de|--docker_ee_repo= ]] && { DOCKER_EE_REPO=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-dc|--docker_configuration= ]] && { CONFIGURATION=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-bc|--byochef= ]] && { BYOCHEF=`echo $parameter|cut -f2- -d'='| tr '[:upper:]' '[:lower:]'`; continue;  };
+        [[ $parameter =~ ^-of|--offline_installation= ]] && { OFFLINE_INSTALL=`echo $parameter|cut -f2- -d'='`| tr '[:upper:]' '[:lower:]'; continue;  };
         [[ $parameter =~ ^-ca|--chef_admin= ]] && { CHEF_ADMIN=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-ch|--chef_host= ]] && { CHEF_HOST=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-co|--chef_org= ]] && { CHEF_ORG=`echo $parameter|cut -f2- -d'='`; continue;  };
@@ -1649,6 +1665,7 @@ while IFS='' read -r parameter || [[ -n "$parameter" ]]; do
         [[ $parameter =~ ^-pv|--camc-pattern-manager_version= ]] && { PATTERN_MGR_VERSION=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-pn|--private_network= ]] && { PRIVATE_NETWORK=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-re|--prereq_strictness= ]] && { PREREQ_STRICTNESS=`echo $parameter|cut -f2- -d'='`; continue;  };
+        [[ $parameter =~ ^-gd|--encryption_passphrase= ]] && { ENCRYPTION_PASSPHRASE=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-n|--nfs_mount_point= ]] && { NFS_SERVER_IP_ADDR=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-tt|--template_timestamp= ]] && { TEMPLATE_TIMESTAMP=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-id|--installer_docker= ]] && { INSTALLER_DOCKER=`echo $parameter|cut -f2- -d'='`; continue;  };
@@ -1678,7 +1695,7 @@ begin_message "Requirements Checker"
 # Check and install pre-requisites
 chmod +x $runtimepath/prereq-check-install.sh
 chmod +x $runtimepath/verify-installation.sh
-$runtimepath/prereq-check-install.sh -m "$PREREQ_STRICTNESS" -c "$CHEF_VERSION" -u "$CAM_PUBLIC_KEY" -r "$CAM_PRIVATE_KEY_ENC" -e "$DOCKER_EE_REPO" -o "$INSTALLER_DOCKER_COMPOSE" -d "$INSTALLER_DOCKER" -b "$BYOCHEF"
+$runtimepath/prereq-check-install.sh -m "$PREREQ_STRICTNESS" -c "$CHEF_VERSION" -u "$CAM_PUBLIC_KEY" -r "$CAM_PRIVATE_KEY_ENC" -e "$DOCKER_EE_REPO" -o "$INSTALLER_DOCKER_COMPOSE" -d "$INSTALLER_DOCKER" -b "$BYOCHEF" -f "$OFFLINE_INSTALL"
 end_message "Successful"
 
 begin_message "Disk"
@@ -1719,9 +1736,9 @@ if [[ ! `sudo ls /etc/docker/daemon.json 2>/dev/null` ]]; then
   sudo groupadd docker || echo ""
   sudo usermod -aG docker $USER # even though we have added the user to the group, it will not take effect on this pid/process
   # Check to see if the docker service is running
-  [[ `which systemctl` ]] && { sudo systemctl stop docker || true ; } || { sudo service docker stop || true ; }
+  [[ `which systemctl` ]] && { echo -n "$ENCRYPTION_PASSPHRASE" | sudo systemctl stop docker || true ; } || { echo -n "$ENCRYPTION_PASSPHRASE" | sudo service docker stop || true ; }
   docker_disk
-  [[ `which systemctl` ]] && sudo systemctl start docker || sudo service docker start
+  [[ `which systemctl` ]] && { echo -n "$ENCRYPTION_PASSPHRASE" | sudo systemctl start docker || true ; } || { echo -n "$ENCRYPTION_PASSPHRASE" | sudo service docker start || true ; }
 fi
 end_message "Successful"
 
@@ -2042,7 +2059,7 @@ $runtimepath/verify-installation.sh
 end_message "Successful"
 
 #clean up
-[[ ! "$DEBUG" = "true" ]] && { sed -i -e '/^--docker_registry_token=/d' -e '/^--software_repo_pass=/d' -e '/^--im_repo_pass=/d' -e '/^--ibm_pm_private_ssh_key=/d' -e '/^--ibm_contenthub_git_access_token=/d'  $parmfile ; }
+[[ ! "$DEBUG" = "true" ]] && { sed -i -e '/^--docker_registry_token=/d' -e '/^--software_repo_pass=/d' -e '/^--im_repo_pass=/d' -e '/^--ibm_pm_private_ssh_key=/d' -e '/^--ibm_contenthub_git_access_token=/d' -e '/^--encryption_passphrase=/d'  $parmfile ; }
 EndOfFile
     destination = "./advanced-content-runtime/launch-docker-compose.sh"
   }
@@ -2080,7 +2097,7 @@ chef_admin_changed    = "${var.chef_admin}",
     inline = [
         "chmod 775 ./advanced-content-runtime/launch-docker-compose.sh",
         "chmod 775 ./advanced-content-runtime/image-upgrade.sh",
-"bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='${var.docker_registry_token}' --nfs_mount_point='${var.nfs_mount}' --software_repo_user='${var.ibm_sw_repo_user}' --software_repo_pass='${var.ibm_sw_repo_password}' --im_repo_user='${var.ibm_im_repo_user_hidden}' --im_repo_pass='${var.ibm_im_repo_password_hidden}'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='${var.ibm_sw_repo_port}' --software_repo_secure_port='${var.ibm_sw_repo_secure_port}' --pattern_mgr=pattern --ibm_contenthub_git_host='${var.ibm_contenthub_git_host}' --ibm_contenthub_git_organization='${var.ibm_contenthub_git_organization}' --ibm_openhub_git_organization='${var.ibm_openhub_git_organization}' --chef_org='${var.chef_org}' --chef_admin='${var.chef_admin}' --chef_fqdn='${var.chef_fqdn}' --chef_ip='${var.chef_ip}' --chef_pem='${var.chef_pem}' --docker_registry='${var.docker_registry}' --chef_version=${var.chef_version} --ibm_pm_access_token='${var.ibm_pm_access_token}' --ibm_pm_admin_token='${var.ibm_pm_admin_token}' --camc-sw-repo_version='${var.docker_registry_camc_sw_repo_version}' --docker_ee_repo='${var.docker_ee_repo}' --camc-pattern-manager_version='${var.docker_registry_camc_pattern_manager_version}' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='${var.ibm_pm_public_ssh_key_name}' --ibm_pm_private_ssh_key='${var.ibm_pm_private_ssh_key}' --ibm_pm_public_ssh_key='${var.ibm_pm_public_ssh_key}' --user_public_ssh_key='${var.user_public_ssh_key}' --prereq_strictness='${var.prereq_strictness}' --ip_address='${var.ipv4_address}' --template_timestamp='${var.template_timestamp_hidden}' --installer_docker='${var.installer_docker}' --installer_docker_compose='${var.installer_docker_compose}' --sw_repo_image='${var.sw_repo_image}' --pm_image='${var.pm_image}' --template_debug='${var.template_debug}' --portable_private_ip='${var.portable_private_ip}' --byochef='${var.byochef}' --install_cookbooks='${var.install_cookbooks}'\""
+"bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='${var.docker_registry_token}' --nfs_mount_point='${var.nfs_mount}' --encryption_passphrase='${var.encryption_passphrase}' --software_repo_user='${var.ibm_sw_repo_user}' --software_repo_pass='${var.ibm_sw_repo_password}' --im_repo_user='${var.ibm_im_repo_user_hidden}' --im_repo_pass='${var.ibm_im_repo_password_hidden}'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='${var.ibm_sw_repo_port}' --software_repo_secure_port='${var.ibm_sw_repo_secure_port}' --pattern_mgr=pattern --ibm_contenthub_git_host='${var.ibm_contenthub_git_host}' --ibm_contenthub_git_organization='${var.ibm_contenthub_git_organization}' --ibm_openhub_git_organization='${var.ibm_openhub_git_organization}' --chef_org='${var.chef_org}' --chef_admin='${var.chef_admin}' --chef_fqdn='${var.chef_fqdn}' --chef_ip='${var.chef_ip}' --chef_pem='${var.chef_pem}' --docker_registry='${var.docker_registry}' --chef_version=${var.chef_version} --ibm_pm_access_token='${var.ibm_pm_access_token}' --ibm_pm_admin_token='${var.ibm_pm_admin_token}' --camc-sw-repo_version='${var.docker_registry_camc_sw_repo_version}' --docker_ee_repo='${var.docker_ee_repo}' --camc-pattern-manager_version='${var.docker_registry_camc_pattern_manager_version}' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='${var.ibm_pm_public_ssh_key_name}' --ibm_pm_private_ssh_key='${var.ibm_pm_private_ssh_key}' --ibm_pm_public_ssh_key='${var.ibm_pm_public_ssh_key}' --user_public_ssh_key='${var.user_public_ssh_key}' --prereq_strictness='${var.prereq_strictness}' --ip_address='${var.ipv4_address}' --template_timestamp='${var.template_timestamp_hidden}' --installer_docker='${var.installer_docker}' --installer_docker_compose='${var.installer_docker_compose}' --sw_repo_image='${var.sw_repo_image}' --pm_image='${var.pm_image}' --template_debug='${var.template_debug}' --portable_private_ip='${var.portable_private_ip}' --byochef='${var.byochef}' --offline_installation='${var.offline_installation}' --install_cookbooks='${var.install_cookbooks}'\""
       ]
   }
 } # End of null_resource
@@ -2100,7 +2117,7 @@ chef_admin_changed    = "${var.chef_admin}",
   output "ibm_im_repo_password" {
   value = "${var.ibm_sw_repo_password}" }
   output "template_timestamp" {
-  value = "2018-03-28 15:22:36" }
+  value = "2018-04-23 21:29:50" }
 ### End VMware output variables
 
 output "runtime_hostname" { value = "${var.runtime_hostname}"}
@@ -2117,6 +2134,7 @@ output "ibm_im_repo_password_hidden" { value = "${var.ibm_im_repo_password_hidde
 output "ibm_contenthub_git_host" { value = "${var.ibm_contenthub_git_host}"}
 output "ibm_contenthub_git_organization" { value = "${var.ibm_contenthub_git_organization}"}
 output "ibm_openhub_git_organization" { value = "${var.ibm_openhub_git_organization}"}
+output "offline_installation" { value = "${var.offline_installation}"}
 output "docker_ee_repo" { value = "${var.docker_ee_repo}"}
 output "chef_org" { value = "${var.chef_org}"}
 output "chef_admin" { value = "${var.chef_admin}"}
@@ -2159,6 +2177,7 @@ output "vmware_image_ssh_private_key" { value = "${var.vmware_image_ssh_private_
 output "network_visibility" { value = "${var.network_visibility}"}
 output "prereq_strictness" { value = "${var.prereq_strictness}"}
 output "portable_private_ip" { value = "${var.portable_private_ip}"}
+output "encryption_passphrase" { value = "${var.encryption_passphrase}"}
 output "installer_docker" { value = "${var.installer_docker}"}
 output "installer_docker_compose" { value = "${var.installer_docker_compose}"}
 output "sw_repo_image" { value = "${var.sw_repo_image}"}

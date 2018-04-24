@@ -1,7 +1,7 @@
  {
     "name": "VMWare - CAM Content Runtime",
     "description": "VMWare Resource to instantiate CAM Content Runtime.",
-    "version": "2.0.2",
+    "version": "1.0",
     "imageUrl": "./assets/svg/IBM_WebSphere_Standalone.svg",
     "image": "tp_WAS_standalone.png",
     "type": "ContentRuntime",
@@ -33,7 +33,7 @@
        },
        {
          "title": "Template version",
-         "description": "2.0.2<br>"
+         "description": "1.0<br>"
        },
        {
          "title": "Operating systems supported",

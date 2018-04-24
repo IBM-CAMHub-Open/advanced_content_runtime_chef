@@ -218,6 +218,19 @@
   "immutable": true
 },
 {
+  "name": "offline_installation",
+  "type": "string",
+  "description": "Is this an offline installation.",
+  "default": "false",
+  "hidden": true,
+  "label": "Offline",
+  "group_name": "additional_settings",
+  "secured": false,
+  "system": true,
+  "required": true,
+  "immutable": true
+},
+{
   "name": "docker_ee_repo",
   "type": "string",
   "description": "Optional parameter which becomes required if you are using RHEL as the base image without docker installed. RHEL supports Docker Enterprise Edition only. Docker Enterprise Edition Repository URL can be obtained from https://store.docker.com/my-content after purchasing a license. Docker Community Edition will be used by default on other supported operating system.",
@@ -404,7 +417,7 @@
   "name": "template_timestamp_hidden",
   "type": "string",
   "description": "Internal automatically updated variable containing the Content Runtime template timestamp",
-  "default": "2018-03-28 15:21:27",
+  "default": "2018-04-23 21:29:19",
   "hidden": true,
   "label": "Template Timestamp",
   "group_name": "additional_settings",
@@ -461,6 +474,18 @@
   "label": "Private IP Address",
   "group_name": "cloud_provider_optional",
   "secured": false,
+  "system": false,
+  "required": false,
+  "immutable": false
+},
+{
+  "name": "encryption_passphrase",
+  "type": "string",
+  "description": "Passphrase for encrypted drives",
+  "hidden": true,
+  "label": "File system encryption passphrase",
+  "group_name": "additional_settings",
+  "secured": true,
   "system": false,
   "required": false,
   "immutable": false
@@ -804,6 +829,18 @@
   "immutable": true
 },
 {
+  "name": "offline_installation",
+  "type": "string",
+  "description": "Is this an offline installation.",
+  "hidden": true,
+  "label": "Offline",
+  "group_name": "content_template_output",
+  "secured": false,
+  "system": true,
+  "required": true,
+  "immutable": true
+},
+{
   "name": "docker_ee_repo",
   "type": "string",
   "description": "Optional parameter which becomes required if you are using RHEL as the base image without docker installed. RHEL supports Docker Enterprise Edition only. Docker Enterprise Edition Repository URL can be obtained from https://store.docker.com/my-content after purchasing a license. Docker Community Edition will be used by default on other supported operating system.",
@@ -1040,6 +1077,18 @@
   "immutable": false
 },
 {
+  "name": "encryption_passphrase",
+  "type": "string",
+  "description": "Passphrase for encrypted drives",
+  "hidden": true,
+  "label": "File system encryption passphrase",
+  "group_name": "content_template_output",
+  "secured": true,
+  "system": false,
+  "required": false,
+  "immutable": false
+},
+{
   "name": "ipv4_address",
   "type": "string",
   "description": "Static IPv4 address to be assigned to this network interface for the Content Runtime VM. The address must be a static IP.",
@@ -1202,10 +1251,10 @@
   "name": "private_key",
   "type": "string",
   "description": "Private key to connect to Content Runtime",
-  "hidden": true,
+  "hidden": false,
   "label": "Private Key",
   "group_name": "content_template_output",
-  "secured": false,
+  "secured": true,
   "system": false,
   "required": false,
   "immutable": false

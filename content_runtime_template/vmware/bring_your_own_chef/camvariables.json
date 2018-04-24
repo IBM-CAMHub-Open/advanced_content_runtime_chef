@@ -218,6 +218,19 @@
   "immutable": true
 },
 {
+  "name": "offline_installation",
+  "type": "string",
+  "description": "Is this an offline installation.",
+  "default": "false",
+  "hidden": true,
+  "label": "Offline",
+  "group_name": "additional_settings",
+  "secured": false,
+  "system": true,
+  "required": true,
+  "immutable": true
+},
+{
   "name": "docker_ee_repo",
   "type": "string",
   "description": "Optional parameter which becomes required if you are using RHEL as the base image without docker installed. RHEL supports Docker Enterprise Edition only. Docker Enterprise Edition Repository URL can be obtained from https://store.docker.com/my-content after purchasing a license. Docker Community Edition will be used by default on other supported operating system.",
@@ -404,7 +417,7 @@
   "name": "template_timestamp_hidden",
   "type": "string",
   "description": "Internal automatically updated variable containing the Content Runtime template timestamp",
-  "default": "2018-03-28 15:22:36",
+  "default": "2018-04-23 21:29:50",
   "hidden": true,
   "label": "Template Timestamp",
   "group_name": "additional_settings",
@@ -505,7 +518,7 @@
   "default": "vmxnet3",
   "hidden": false,
   "label": "vSphere Network Adapter Type",
-  "group_name": "cloud_provider_optional",
+  "group_name": "cloud_provider",
   "secured": false,
   "system": false,
   "required": true,
@@ -853,6 +866,18 @@
   "immutable": true
 },
 {
+  "name": "encryption_passphrase",
+  "type": "string",
+  "description": "Passphrase for encrypted drives",
+  "hidden": true,
+  "label": "File system encryption passphrase",
+  "group_name": "additional_settings",
+  "secured": true,
+  "system": false,
+  "required": false,
+  "immutable": false
+},
+{
   "name": "installer_docker",
   "type": "string",
   "description": "Optional file location of a docker .deb/.rpm file to be installed on the system",
@@ -1085,6 +1110,18 @@
   "immutable": true
 },
 {
+  "name": "offline_installation",
+  "type": "string",
+  "description": "Is this an offline installation.",
+  "hidden": true,
+  "label": "Offline",
+  "group_name": "content_template_output",
+  "secured": false,
+  "system": true,
+  "required": true,
+  "immutable": true
+},
+{
   "name": "docker_ee_repo",
   "type": "string",
   "description": "Optional parameter which becomes required if you are using RHEL as the base image without docker installed. RHEL supports Docker Enterprise Edition only. Docker Enterprise Edition Repository URL can be obtained from https://store.docker.com/my-content after purchasing a license. Docker Community Edition will be used by default on other supported operating system.",
@@ -1302,7 +1339,7 @@
   "description": "Name of the vSphere folder where the VM is created.",
   "hidden": false,
   "label": "vSphere Folder",
-  "group_name": "cloud_provider_optional",
+  "group_name": "content_template_output",
   "secured": false,
   "system": false,
   "required": false,
@@ -1326,7 +1363,7 @@
   "description": "Name of the default resource pool for the cluster. Specified as 'cluster_name/resource_pool'",
   "hidden": false,
   "label": "vSphere Default Resource Pool",
-  "group_name": "cloud_provider",
+  "group_name": "content_template_output",
   "secured": false,
   "system": false,
   "required": true,
@@ -1358,7 +1395,7 @@
   "description": "Network interface type",
   "hidden": false,
   "label": "vSphere Network Adapter Type",
-  "group_name": "cloud_provider_optional",
+  "group_name": "content_template_output",
   "secured": false,
   "system": false,
   "required": true,
@@ -1673,6 +1710,18 @@
   "system": false,
   "required": false,
   "immutable": true
+},
+{
+  "name": "encryption_passphrase",
+  "type": "string",
+  "description": "Passphrase for encrypted drives",
+  "hidden": true,
+  "label": "File system encryption passphrase",
+  "group_name": "content_template_output",
+  "secured": true,
+  "system": false,
+  "required": false,
+  "immutable": false
 },
 {
   "name": "installer_docker",
