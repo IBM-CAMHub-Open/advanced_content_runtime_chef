@@ -4,7 +4,7 @@
 # US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
 ### Begin Input
- variable "runtime_hostname" { type = "string" }
+
  variable "docker_registry_token" { type = "string" }
  variable "docker_registry" { type = "string" }
  variable "docker_registry_camc_pattern_manager_version" { type = "string" }
@@ -13,6 +13,8 @@
  variable "ibm_sw_repo_password" { type = "string" }
  variable "ibm_sw_repo_port" { type = "string" }
  variable "ibm_sw_repo_secure_port" { type = "string" }
+ variable "chef_client_version" { type = "string" }
+ variable "chef_client_path" { type = "string" }
  variable "ibm_im_repo_user_hidden" { type = "string" }
  variable "ibm_im_repo_password_hidden" { type = "string" }
  variable "ibm_contenthub_git_host" { type = "string" }
@@ -37,6 +39,7 @@
  variable "template_debug" { type = "string" }
  variable "nfs_mount" { type = "string" }
  variable "ipv4_address" { type = "string" }
+ variable "runtime_domain" { type = "string" }
  variable "vm_image_ssh_user" { type = "string" }
  variable "vm_image_ssh_password" { type = "string" }
  variable "vm_image_ssh_private_key" { type = "string" }
@@ -86,6 +89,7 @@ RESULT=0
 
 # Declare the default chef and docker compose versions for their installations
 CHEF_VERSION=12.11.1
+CHEF_CLIENT_VERSION=12.17.44
 DOCKER_COMPOSE_VERSION=1.17.1
 
 function wait_apt_lock()
@@ -147,6 +151,8 @@ fi
 while test $# -gt 0 ; do
   [[ $1 =~ ^-m|--mode ]] && { PARAM_MODE="$2"; shift 2; continue; };
   [[ $1 =~ ^-c|--chef ]] && { PARAM_CHEF="$2"; shift 2; continue; };
+  [[ $1 =~ ^-s|--client ]] && { PARAM_CLIENT="$2"; shift 2; continue; };
+  [[ $1 =~ ^-p|--path ]] && { PARAM_CLIENT_PATH="$2"; shift 2; continue; };
   [[ $1 =~ ^-u|--public ]] && { PARAM_PUBLIC_KEY="$2"; shift 2; continue; };
   [[ $1 =~ ^-r|--private ]] && { PARAM_PRIVATE_KEY="$2"; shift 2; continue; };
   [[ $1 =~ ^-e|--dockeree ]] && { PARAM_DOCKEREE="$2"; shift 2; continue; };
@@ -154,6 +160,7 @@ while test $# -gt 0 ; do
   [[ $1 =~ ^-d|--docker ]] && { PARAM_DOCKER="$2"; shift 2; continue; };
   [[ $1 =~ ^-b|--byochef ]] && { PARAM_BYOCHEF="$2"; shift 2; continue; };
   [[ $1 =~ ^-f|--offline ]] && { PARAM_OFFLINE="$2"; shift 2; continue; };
+
   break;
 done
 
@@ -231,7 +238,12 @@ else
       CHEF_URL=https://packages.chef.io/files/stable/chef-server/$CHEF_VERSION/el/$MAIN_VERSION/chef-server-core-$CHEF_VERSION-1.el$MAIN_VERSION.x86_64.rpm
     fi
   fi
-  echo "[*] Using chef installation URL: $CHEF_URL"
+  echo "[*] Using Chef installation URL: $CHEF_URL"
+fi
+
+# Get chef client URL from parameter
+if [ -z "$PARAM_CLIENT" ]; then
+  PARAM_CLIENT=$CHEF_CLIENT
 fi
 
 if [ ! -e `dirname $0`/.advanced-runtime-config/sshkeyverified ] ; then
@@ -379,6 +391,27 @@ function install_chef() {
   fi
 }
 
+# Download Chef client installation binaries to a well-known location. These binaries will be user by the Software Repository
+function download_chef_client() {
+  CLIENTS_FOLDER="chef-clients"
+  mkdir $CLIENTS_FOLDER
+  if [[ "$PARAM_OFFLINE" == "true" ]]; then
+    if [[ -z "$PARAM_CLIENT_PATH" ]]; then
+      echo "[ERROR] A path for the Chef client installers wasn't provided"
+      exit 1
+    else
+      cp $PARAM_CLIENT_PATH/*.* $CLIENTS_FOLDER/
+    fi
+  else
+    download_file "Chef client for Ubuntu 16.04" "https://packages.chef.io/files/stable/chef/$CHEF_CLIENT_VERSION/ubuntu/16.04/chef_$CHEF_CLIENT_VERSION-1_amd64.deb" "chef_$CHEF_CLIENT_VERSION-1_amd64.deb"
+    download_file "Chef client for RHEL 6" "https://packages.chef.io/files/stable/chef/$CHEF_CLIENT_VERSION/el/6/chef-$CHEF_CLIENT_VERSION-1.el6.x86_64.rpm" "chef-$CHEF_CLIENT_VERSION-1.el6.x86_64.rpm"
+    download_file "Chef client for RHEL 7" "https://packages.chef.io/files/stable/chef/$CHEF_CLIENT_VERSION/el/7/chef-$CHEF_CLIENT_VERSION-1.el7.x86_64.rpm" "chef-$CHEF_CLIENT_VERSION-1.el7.x86_64.rpm"
+    download_file "Chef vault gem" "https://rubygems.org/downloads/chef-vault-2.9.0.gem" "chef-vault-2.9.0.gem"
+    mv *$CHEF_CLIENT_VERSION* $CLIENTS_FOLDER/
+    mv chef-vault-* $CLIENTS_FOLDER/
+  fi
+}
+
 function install_docker() {
   # Install
   if [[ -n $PARAM_DOCKER ]]; then
@@ -479,6 +512,7 @@ if [[ "$PARAM_BYOCHEF" == "false" ]]; then
 fi
 check_command_and_install docker install_docker
 check_command_and_install docker-compose install_docker_compose
+download_chef_client
 
 # Additional fixes
 check_firewall
@@ -1041,7 +1075,12 @@ EndOfFile
     content = <<EndOfFile
 #!/usr/bin/env python
 
-""" Create a PM config file from input values
+"""
+Create a PM config file from input values.
+
+Note: This is the content runtime copy of this file and is the production copy.
+      The copy of this file in infra-pattern-manager is used for pattern
+      manager testing.
 """
 
 import argparse
@@ -1063,6 +1102,7 @@ parser.add_argument("chef_admin_id")
 parser.add_argument("software_repo_ip")
 parser.add_argument("software_repo_unsecured_port")
 parser.add_argument("target_file", default="pm_config.json")
+parser.add_argument("chef_client_version", default="14.0.202")
 args = parser.parse_args()
 
 with open(args.cam_service_key_loc, "r") as f:
@@ -1083,18 +1123,26 @@ pm_config = {
     "access_tokens": {
         "access_token": args.access_token,
         "admin_token": args.admin_token
-                     },
-    "cam_service_keys": {"default": {"raw_key": cam_key_raw}},
-    "chef_servers": {"default":
-                     {"pem": pem_raw, "fqdn": args.chef_fqdn,
-                      "org": args.chef_org, "ip": args.chef_ip,
-                      "admin_id": args.chef_admin_id,
-                      "software_repo_ip": args.software_repo_ip,
-                      "software_repo_unsecured_port":
-                          args.software_repo_unsecured_port
-                      }
-                     }
-             }
+    },
+    "cam_service_keys": {
+        "default": {
+            "raw_key": cam_key_raw
+        }
+    },
+    "chef_servers": {
+        "default": {
+            "pem": pem_raw,
+            "fqdn": args.chef_fqdn,
+            "org": args.chef_org,
+            "ip": args.chef_ip,
+            "admin_id": args.chef_admin_id,
+            "software_repo_ip": args.software_repo_ip,
+            "software_repo_unsecured_port": args.software_repo_unsecured_port,
+            "chef_client_version": args.chef_client_version
+        }
+    }
+}
+
 en_pm_config = base64.b64encode(json.dumps(pm_config))
 
 with open(args.target_file, "w") as f:
@@ -1170,6 +1218,7 @@ EndOfFile
       - /var/log/ibm/docker/software-repo/var/log/nginx:/var/log/nginx
       - /opt/ibm/docker/software-repo/etc/fstab:/etc/fstab
       - /opt/ibm/docker/software-repo/var/swRepo/private:/var/swRepo/private
+      - /opt/ibm/docker/software-repo/var/swRepo/public:/var/swRepo/public
       - /opt/ibm/docker/software-repo/var/swRepo/yumRepo:/var/swRepo/yumRepo
       - /opt/ibm/docker/software-repo/etc/nginx/server-certs:/etc/nginx/ssl
     environment:
@@ -1375,7 +1424,7 @@ function find_disk()
   # Will return an unallocated disk, it will take a sorting order from largest to smallest, allowing a the caller to indicate which disk
   [[ -z "$1" ]] && whichdisk=1 || whichdisk=$1
   local readonly=`sudo parted -l | egrep -i "Warning:" | tr ' ' '\n' | egrep "/dev/" | sort -u | xargs -i echo "{}|" | xargs echo "NONE|" | tr -d ' ' | rev | cut -c2- | rev`
-  diskcount=`sudo parted -l 2>&1 | egrep -v "$readonly" | egrep -c -i 'ERROR: '`
+  diskcount=`sudo parted -l 2>&1 | egrep -v "$readonly|/dev/mapper/" | egrep -c -i 'ERROR: '`
   if [ "$diskcount" -lt "$whichdisk" ] ; then
         echo ""
   else
@@ -1400,6 +1449,7 @@ function allocate_software_disk()
      echo $DISK_ONE  $MOUNT_POINT   ext4    defaults    0 0 | sudo tee -a $FSTAB_FILE
      sudo mount $DISK_ONE $MOUNT_POINT
      sudo mkdir -p $REPO_DIR
+     sudo mkdir -p $REPO_PUB_DIR
   fi
   # We shall just use local storage here in place of software
   [[ -e $runtimepath/mkdir.properties ]] && cat $runtimepath/mkdir.properties | egrep -v '#' | xargs -i sudo mkdir -p $REPO_DIR/{}
@@ -1474,7 +1524,9 @@ CHEF_PEM=""
 CHEF_HOST=""
 CHEF_HOST_FQDN=""
 CHEF_ORG="opencontent"
-CHEF_VERSION=12.1.1
+CHEF_VERSION=12.11.1
+CHEF_CLIENT_VERSION=12.17.44
+CHEF_CLIENT_PATH=''
 CHEF_URL="https://packages.chef.io/files/stable/chef-server/12.11.1/ubuntu/14.04/chef-server-core_12.11.1-1_amd64.deb"
 CHEF_ADMIN_PASSWORD=''
 CHEF_SSL_CERT_COUNTRY=''
@@ -1509,6 +1561,7 @@ CAMHUB_HOST="github.ibm.com"
 CAMHUB_ORG="CAMHub-Test"
 CAMHUB_OPEN_ORG=""
 
+UPDATE_VM_PUBLIC_KEYS="false"
 CAM_PRIVATE_KEY_ENC=""
 CAM_PUBLIC_KEY=""
 CAM_PUBLIC_KEY_NAME=""
@@ -1542,6 +1595,8 @@ while IFS='' read -r parameter || [[ -n "$parameter" ]]; do
         [[ $parameter =~ ^-cs|--chef_ssl_cert_state= ]] && { CHEF_SSL_CERT_STATE=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-ct|--chef_ssl_cert_city= ]] && { CHEF_SSL_CERT_CITY=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-cv|--chef_version= ]] && { CHEF_VERSION=`echo $parameter|cut -f2- -d'='`; continue;  };
+        [[ $parameter =~ ^-cc|--chef_client_version= ]] && { CHEF_CLIENT_VERSION=`echo $parameter|cut -f2- -d'='`; continue;  };
+        [[ $parameter =~ ^-cl|--chef_client_path= ]] && { CHEF_CLIENT_PATH=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-cu|--chef_url= ]] && { CHEF_URL=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-ci|--chef_ip= ]] && { CHEF_IPADDR=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-cp|--chef_pem= ]] && { CHEF_PEM=`echo $parameter|cut -f2- -d'='`; continue;  };
@@ -1597,7 +1652,7 @@ begin_message "Requirements Checker"
 # Check and install pre-requisites
 chmod +x $runtimepath/prereq-check-install.sh
 chmod +x $runtimepath/verify-installation.sh
-$runtimepath/prereq-check-install.sh -m "$PREREQ_STRICTNESS" -c "$CHEF_VERSION" -u "$CAM_PUBLIC_KEY" -r "$CAM_PRIVATE_KEY_ENC" -e "$DOCKER_EE_REPO" -o "$INSTALLER_DOCKER_COMPOSE" -d "$INSTALLER_DOCKER" -b "$BYOCHEF" -f "$OFFLINE_INSTALL"
+$runtimepath/prereq-check-install.sh -m "$PREREQ_STRICTNESS" -c "$CHEF_VERSION" -s "$CHEF_CLIENT_VERSION" -p "$CHEF_CLIENT_PATH" -u "$CAM_PUBLIC_KEY" -r "$CAM_PRIVATE_KEY_ENC" -e "$DOCKER_EE_REPO" -o "$INSTALLER_DOCKER_COMPOSE" -d "$INSTALLER_DOCKER" -b "$BYOCHEF" -f "$OFFLINE_INSTALL"
 end_message "Successful"
 
 begin_message "Disk"
@@ -1605,7 +1660,9 @@ FSTAB_FILE="/etc/fstab"
 
 platform=`cat /etc/*release 2>/dev/null| egrep "^ID=" | cut -d '=' -f 2- | tr -d '"'`
 MOUNT_POINT="/opt/ibm/docker/software-repo"
+REPO_PUB_DIR=$MOUNT_POINT/var/swRepo/public/chef
 REPO_DIR=$MOUNT_POINT/var/swRepo/private
+
 if [[ ! -e $parmdir/mounts_setup.done ]] ; then
   case $NFS_SERVER_IP_ADDR in
     "format"|"local")
@@ -1624,7 +1681,7 @@ if [[ ! -e $parmdir/mounts_setup.done ]] ; then
       sudo mkdir -p /nfsmnt
       sudo mount /nfsmnt
       # Sym-link the software repo
-      [[ ! -e $MOUNT_POINT/var/ ]] &&  sudo mkdir -p $MOUNT_POINT/var/
+      [[ ! -e $MOUNT_POINT/var/ ]] && sudo mkdir -p $MOUNT_POINT/var/
       sudo ln -s /nfsmnt/software-repo/var/swRepo/ $MOUNT_POINT/var/swRepo
   esac
   touch $parmdir/mounts_setup.done
@@ -1722,6 +1779,12 @@ if [[ ! -e $parmdir/chef_setup.done ]]; then
   touch $parmdir/chef_setup.done
 fi
 
+# Move the Chef client installation file to the SW Repo public directory
+CHEF_CLIENTS_FOLDER="chef-clients"
+if [ -d $CHEF_CLIENTS_FOLDER ]; then
+  sudo mkdir -p $REPO_PUB_DIR
+  sudo mv $CHEF_CLIENTS_FOLDER/* $REPO_PUB_DIR/
+fi
 end_message "Successful"
 
 begin_message Certs
@@ -1745,7 +1808,7 @@ EXISTING_PORT=""
 EXISTING_CHEF_IP=""
 EXISTING_CHEF_PEM=""
 EXISTING_CHEF_FQDN=""
-UPDATE_VM_PUBLIC_KEYS=""
+UPDATE_VM_IC_KEYS=""
 if [ ! -z "$CAM_PRIVATE_KEY_ENC" ] && [ -e "$CAM_RUNTIME_KEY_FILE" ]; then
     echo "Pattern manager key exists"
     EXISTING_CAM_PRIVATE_KEY=`cat $CAM_RUNTIME_KEY_FILE`
@@ -1772,7 +1835,7 @@ if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_K
     echo "[*] Creating Pattern Manager config directory"
     sudo mkdir -p $CONFIG_PATH
 
-    #If we are updating the keys, get the existing public key
+    #If we are updating the keys, get the existing ic key
     EXISTING_CAM_PUBLIC_KEY=""
     if [ -n "$EXISTING_CAM_PRIVATE_KEY" ] && [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_KEY" ] && [ -e "$CAM_RUNTIME_KEY_FILE" ]; then
         TMP_FILE=`mktemp`
@@ -1795,7 +1858,7 @@ if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_K
 
     #Config File Creation Script
     chmod +x $runtimepath/crtconfig.py
-    sudo python $runtimepath/crtconfig.py $PATTERN_MGR_ACCESS_TOKEN $PATTERN_MGR_ADMIN_TOKEN -c=encoded $CONFIG_PATH/cam_runtime_key_`hostname` $CHEF_PEM_LOC $CHEF_HOST_FQDN $CHEF_ORG $CHEF_IPADDR $CHEF_ADMIN $SOFTWARE_REPO_IP $SOFTWARE_REPO_PORT $CONFIG_PATH/config.json
+    sudo python $runtimepath/crtconfig.py $PATTERN_MGR_ACCESS_TOKEN $PATTERN_MGR_ADMIN_TOKEN -c=encoded $CONFIG_PATH/cam_runtime_key_`hostname` $CHEF_PEM_LOC $CHEF_HOST_FQDN $CHEF_ORG $CHEF_IPADDR $CHEF_ADMIN $SOFTWARE_REPO_IP $SOFTWARE_REPO_PORT $CONFIG_PATH/config.json $CHEF_CLIENT_VERSION
 
     #Changing created files' permissions
     sudo chmod 755 $CONFIG_PATH/cam_runtime_key_`hostname` $CONFIG_PATH/config.json
@@ -1999,7 +2062,7 @@ chef_admin_changed    = "${var.chef_admin}",
     inline = [
         "chmod 775 ./advanced-content-runtime/launch-docker-compose.sh",
         "chmod 775 ./advanced-content-runtime/image-upgrade.sh",
-"bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='${var.docker_registry_token}' --nfs_mount_point='${var.nfs_mount}' --encryption_passphrase='${var.encryption_passphrase}' --software_repo_user='${var.ibm_sw_repo_user}' --software_repo_pass='${var.ibm_sw_repo_password}' --im_repo_user='${var.ibm_im_repo_user_hidden}' --im_repo_pass='${var.ibm_im_repo_password_hidden}'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='${var.ibm_sw_repo_port}' --software_repo_secure_port='${var.ibm_sw_repo_secure_port}' --pattern_mgr=pattern --ibm_contenthub_git_host='${var.ibm_contenthub_git_host}' --ibm_contenthub_git_organization='${var.ibm_contenthub_git_organization}' --ibm_openhub_git_organization='${var.ibm_openhub_git_organization}' --chef_org='${var.chef_org}' --chef_admin='${var.chef_admin}' --chef_fqdn='${var.chef_fqdn}' --chef_ip='${var.chef_ip}' --chef_pem='${var.chef_pem}' --docker_registry='${var.docker_registry}' --chef_version=${var.chef_version} --ibm_pm_access_token='${var.ibm_pm_access_token}' --ibm_pm_admin_token='${var.ibm_pm_admin_token}' --camc-sw-repo_version='${var.docker_registry_camc_sw_repo_version}' --docker_ee_repo='${var.docker_ee_repo}' --camc-pattern-manager_version='${var.docker_registry_camc_pattern_manager_version}' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='${var.ibm_pm_public_ssh_key_name}' --ibm_pm_private_ssh_key='${var.ibm_pm_private_ssh_key}' --ibm_pm_public_ssh_key='${var.ibm_pm_public_ssh_key}' --user_public_ssh_key='${var.user_public_ssh_key}' --prereq_strictness='${var.prereq_strictness}' --ip_address='${var.ipv4_address}' --template_timestamp='${var.template_timestamp_hidden}' --installer_docker='${var.installer_docker}' --installer_docker_compose='${var.installer_docker_compose}' --sw_repo_image='${var.sw_repo_image}' --pm_image='${var.pm_image}' --template_debug='${var.template_debug}' --portable_private_ip='${var.portable_private_ip}' --byochef='${var.byochef}' --offline_installation='${var.offline_installation}' --install_cookbooks='${var.install_cookbooks}'\""
+"bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='${var.docker_registry_token}' --nfs_mount_point='${var.nfs_mount}' --encryption_passphrase='${var.encryption_passphrase}' --software_repo_user='${var.ibm_sw_repo_user}' --software_repo_pass='${var.ibm_sw_repo_password}' --im_repo_user='${var.ibm_im_repo_user_hidden}' --im_repo_pass='${var.ibm_im_repo_password_hidden}'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='${var.ibm_sw_repo_port}' --software_repo_secure_port='${var.ibm_sw_repo_secure_port}' --pattern_mgr=pattern --ibm_contenthub_git_host='${var.ibm_contenthub_git_host}' --ibm_contenthub_git_organization='${var.ibm_contenthub_git_organization}' --ibm_openhub_git_organization='${var.ibm_openhub_git_organization}' --chef_org='${var.chef_org}' --chef_admin='${var.chef_admin}' --chef_fqdn='${var.chef_fqdn}' --chef_ip='${var.chef_ip}' --chef_pem='${var.chef_pem}' --docker_registry='${var.docker_registry}' --chef_version=${var.chef_version} --chef_client_version='${var.chef_client_version}' --chef_client_path='${var.chef_client_path}' --ibm_pm_access_token='${var.ibm_pm_access_token}' --ibm_pm_admin_token='${var.ibm_pm_admin_token}' --camc-sw-repo_version='${var.docker_registry_camc_sw_repo_version}' --docker_ee_repo='${var.docker_ee_repo}' --camc-pattern-manager_version='${var.docker_registry_camc_pattern_manager_version}' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='${var.ibm_pm_public_ssh_key_name}' --ibm_pm_private_ssh_key='${var.ibm_pm_private_ssh_key}' --ibm_pm_public_ssh_key='${var.ibm_pm_public_ssh_key}' --user_public_ssh_key='${var.user_public_ssh_key}' --prereq_strictness='${var.prereq_strictness}' --ip_address='${var.ipv4_address}' --template_timestamp='${var.template_timestamp_hidden}' --installer_docker='${var.installer_docker}' --installer_docker_compose='${var.installer_docker_compose}' --sw_repo_image='${var.sw_repo_image}' --pm_image='${var.pm_image}' --template_debug='${var.template_debug}' --portable_private_ip='${var.portable_private_ip}' --byochef='${var.byochef}' --offline_installation='${var.offline_installation}' --install_cookbooks='${var.install_cookbooks}'\""
       ]
   }
 } # End of null_resource
@@ -2018,10 +2081,9 @@ chef_admin_changed    = "${var.chef_admin}",
   output "ibm_im_repo_password" {
   value = "${var.ibm_sw_repo_password}" }
   output "template_timestamp" {
-  value = "2018-04-23 21:29:56" }
+  value = "2018-05-15 15:27:40" }
 ### End Other output variables
 
-output "runtime_hostname" { value = "${var.runtime_hostname}"}
 output "docker_registry_token" { value = "${var.docker_registry_token}"}
 output "docker_registry" { value = "${var.docker_registry}"}
 output "docker_registry_camc_pattern_manager_version" { value = "${var.docker_registry_camc_pattern_manager_version}"}
@@ -2030,6 +2092,8 @@ output "ibm_sw_repo_user" { value = "${var.ibm_sw_repo_user}"}
 output "ibm_sw_repo_password" { value = "${var.ibm_sw_repo_password}"}
 output "ibm_sw_repo_port" { value = "${var.ibm_sw_repo_port}"}
 output "ibm_sw_repo_secure_port" { value = "${var.ibm_sw_repo_secure_port}"}
+output "chef_client_version" { value = "${var.chef_client_version}"}
+output "chef_client_path" { value = "${var.chef_client_path}"}
 output "ibm_im_repo_user_hidden" { value = "${var.ibm_im_repo_user_hidden}"}
 output "ibm_im_repo_password_hidden" { value = "${var.ibm_im_repo_password_hidden}"}
 output "ibm_contenthub_git_host" { value = "${var.ibm_contenthub_git_host}"}
@@ -2054,6 +2118,7 @@ output "template_timestamp_hidden" { value = "${var.template_timestamp_hidden}"}
 output "template_debug" { value = "${var.template_debug}"}
 output "nfs_mount" { value = "${var.nfs_mount}"}
 output "ipv4_address" { value = "${var.ipv4_address}"}
+output "runtime_domain" { value = "${var.runtime_domain}"}
 output "vm_image_ssh_user" { value = "${var.vm_image_ssh_user}"}
 output "vm_image_ssh_password" { value = "${var.vm_image_ssh_password}"}
 output "vm_image_ssh_private_key" { value = "${var.vm_image_ssh_private_key}"}
