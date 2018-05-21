@@ -250,7 +250,7 @@
   "type": "string",
   "description": "Optional parameter which becomes required if you are using RHEL as the base image without docker installed. RHEL supports Docker Enterprise Edition only. Docker Enterprise Edition Repository URL can be obtained from https://store.docker.com/my-content after purchasing a license. Docker Community Edition will be used by default on other supported operating system.",
   "default": "",
-  "hidden": false,
+  "hidden": true,
   "label": "Docker Enterprise Edition Repository URL",
   "group_name": "docker_chef_settings",
   "secured": false,
@@ -442,7 +442,7 @@
   "name": "template_timestamp_hidden",
   "type": "string",
   "description": "Internal automatically updated variable containing the Content Runtime template timestamp",
-  "default": "2018-05-15 15:27:52",
+  "default": "2018-05-17 20:37:06",
   "hidden": true,
   "label": "Template Timestamp",
   "group_name": "additional_settings",
@@ -611,7 +611,7 @@
   "group_name": "optional_offline",
   "secured": false,
   "system": false,
-  "required": true,
+  "required": false,
   "immutable": false
 },
 {
@@ -624,7 +624,7 @@
   "group_name": "optional_offline",
   "secured": false,
   "system": false,
-  "required": true,
+  "required": false,
   "immutable": false
 },
 {
@@ -637,7 +637,7 @@
   "group_name": "optional_offline",
   "secured": false,
   "system": false,
-  "required": true,
+  "required": false,
   "immutable": false
 },
 {
@@ -650,7 +650,7 @@
   "group_name": "optional_offline",
   "secured": false,
   "system": false,
-  "required": true,
+  "required": false,
   "immutable": false
 },
 {
@@ -663,7 +663,7 @@
   "group_name": "optional_offline",
   "secured": false,
   "system": false,
-  "required": true,
+  "required": false,
   "immutable": false
 }
 ],
@@ -864,7 +864,7 @@
   "name": "docker_ee_repo",
   "type": "string",
   "description": "Optional parameter which becomes required if you are using RHEL as the base image without docker installed. RHEL supports Docker Enterprise Edition only. Docker Enterprise Edition Repository URL can be obtained from https://store.docker.com/my-content after purchasing a license. Docker Community Edition will be used by default on other supported operating system.",
-  "hidden": false,
+  "hidden": true,
   "label": "Docker Enterprise Edition Repository URL",
   "group_name": "content_template_output",
   "secured": false,
@@ -1194,7 +1194,7 @@
   "group_name": "content_template_output",
   "secured": false,
   "system": false,
-  "required": true,
+  "required": false,
   "immutable": false
 },
 {
@@ -1206,7 +1206,7 @@
   "group_name": "content_template_output",
   "secured": false,
   "system": false,
-  "required": true,
+  "required": false,
   "immutable": false
 },
 {
@@ -1218,7 +1218,7 @@
   "group_name": "content_template_output",
   "secured": false,
   "system": false,
-  "required": true,
+  "required": false,
   "immutable": false
 },
 {
@@ -1230,7 +1230,7 @@
   "group_name": "content_template_output",
   "secured": false,
   "system": false,
-  "required": true,
+  "required": false,
   "immutable": false
 },
 {
@@ -1242,7 +1242,7 @@
   "group_name": "content_template_output",
   "secured": false,
   "system": false,
-  "required": true,
+  "required": false,
   "immutable": false
 }
 ,

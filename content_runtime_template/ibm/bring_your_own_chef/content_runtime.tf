@@ -383,11 +383,19 @@ if [[ "$h" =~ [A-Z] ]]; then
   fi
 fi
 
+# Add hostname to the /etc/hosts file if it isn't there
+if grep -q "$h" /etc/hosts; then
+  echo "[*] Hostname exists in /etc/hosts"
+else
+  echo "[*] Adding hostname to /etc/hosts"
+  sudo sed -i "1s/^/127.0.0.1 $h\n/" /etc/hosts
+fi
+
 # Get Docker EE repo URL
 if ! command_exists docker; then
   if [ -z "$PARAM_DOCKEREE" ]; then
     echo "[*] No Docker EE repository provided"
-    if [[ $PLATFORM == *"rhel"* ]] && [ -n $PARAM_DOCKER ]; then
+    if [[ "$PLATFORM" == *"rhel"* ]] && [ -z "$PARAM_DOCKER" ]; then
       echo "[ERROR] Docker CE for Red Hat Enterprise is not supported, please provide a valid Docker EE repository URL"
       exit 1
     fi
@@ -1025,9 +1033,9 @@ download_file() {
   do
     sleep 10
     PROGRESS=`grep -o -a "..0..%" $3.prg | tail -n1`
-    if [ "$PROGRESS%" != "$LAST_PROGRESS%" ]; then
+    if [ "$PROGRESS%" != "$LAST_PROGRESS%" ] && [ ! -z "$PROGRESS" ]; then
       LAST_PROGRESS=$PROGRESS
-      if !  egrep "[.*\d.*]$"  <<< $PROGRESS ; then
+      if !  egrep "[.*\d.*]$"  <<< $PROGRESS; then
         printf "%s %s [$PROGRESS%]\n" "$string" "$line"
       fi
     fi
@@ -1786,7 +1794,7 @@ fi
 end_message "Successful"
 
 #Install docker engine
-begin_message Docker
+begin_message "Docker"
 if [[ ! `sudo ls /etc/docker/daemon.json 2>/dev/null` ]]; then
   sudo groupadd docker || echo ""
   sudo usermod -aG docker $USER # even though we have added the user to the group, it will not take effect on this pid/process
@@ -1797,7 +1805,7 @@ if [[ ! `sudo ls /etc/docker/daemon.json 2>/dev/null` ]]; then
 fi
 end_message "Successful"
 
-begin_message Environment
+begin_message "Environment"
 
 # The main difference between aws and other is the network and getting some information
 # This line will determine if the machine is in AWS, if so, it must curl the IPAddress. Otherwise the code will sed its way thru the ip addr return removing all local, and private IPs to find the public IP
@@ -2180,7 +2188,7 @@ chef_admin_changed    = "${var.chef_admin}",
   output "ibm_im_repo_password" {
   value = "${var.ibm_sw_repo_password}" }
   output "template_timestamp" {
-  value = "2018-05-15 15:27:22" }
+  value = "2018-05-17 20:36:37" }
 
 ### End IBM output variables
 output "docker_registry_token" { value = "${var.docker_registry_token}"}
