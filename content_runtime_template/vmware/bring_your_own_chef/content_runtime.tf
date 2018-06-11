@@ -1273,11 +1273,12 @@ EndOfFile
 
   provisioner "file" {
     content     = <<EndOfFile
-{ 
+{
 	"authorization": { "personal_access_token": "$CAMHUB_ACCESS_TOKEN"},
         "github_hostname": "$CAMHUB_HOST",
         "org": "$CAMHUB_ORG",
-        "repos": "cookbook_.*"
+        "repos": "cookbook_.*",
+        "branch": "1.0"
 }
 EndOfFile
     destination = "./advanced-content-runtime/load.tmpl"
@@ -1396,7 +1397,7 @@ echo "Pull done, restarting containers..."
 sudo docker-compose -f $toolpath/docker-compose.yml stop
 sudo docker-compose -f $toolpath/docker-compose.yml up -d
 
-# Archive the output into the parameter file 
+# Archive the output into the parameter file
 imagename=`grep -q ".*image:.*$1:.*" $toolpath/docker-compose.yml | rev |cut -f2 -d: | cut -f1 -d/ | rev`
 sed -i "s/\(--$imagename\_version=\)\(.*\)/\1$2/" `find $toolpath -name .launch-docker-compose.sh`
 
@@ -2115,7 +2116,7 @@ if [[ "$INSTALL_COOKBOOKS" == "true" ]]; then
 else
   echo "[*] Skipping installation of cookbooks"
 fi
-if [ ! -z "$UPDATE_VM_PUBLIC_KEYS" ] ; then
+if [[ "$UPDATE_VM_PUBLIC_KEYS" == "true" ]] ; then
   echo "Updating the authorized_keys on existing deployed VMs"
   curl -k -H "Authorization:Bearer $PATTERN_MGR_ADMIN_TOKEN" -X POST -d '{"new_public_key": "$CAM_PUBLIC_KEY", "old_public_key": "$EXISTING_CAM_PUBLIC_KEY"}' https://localhost:5443/v1/admin/config/reload
 fi
@@ -2188,7 +2189,7 @@ chef_admin_changed    = "${var.chef_admin}",
   output "ibm_im_repo_password" {
   value = "${var.ibm_sw_repo_password}" }
   output "template_timestamp" {
-  value = "2018-05-17 20:36:49" }
+  value = "2018-05-22 21:17:39" }
 ### End VMware output variables
 
 output "docker_registry_token" { value = "${var.docker_registry_token}"}
