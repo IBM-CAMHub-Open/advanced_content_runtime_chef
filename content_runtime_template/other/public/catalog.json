@@ -1,7 +1,7 @@
  {
     "name": "Bring your own VM - CAM Content Runtime",
     "description": "Bring your own VM Resource to instantiate CAM Content Runtime.",
-    "version": "1.0",
+    "version": "2.2",
     "imageUrl": "./assets/svg/IBM_WebSphere_Standalone.svg",
     "image": "tp_WAS_standalone.png",
     "type": "ContentRuntime",

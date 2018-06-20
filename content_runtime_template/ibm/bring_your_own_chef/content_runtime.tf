@@ -184,9 +184,13 @@ RESULT=0
 . `dirname $0`/utilities.sh
 
 # Declare the default chef and docker compose versions for their installations
-CHEF_VERSION=12.11.1
-CHEF_CLIENT_VERSION=12.17.44
+CHEF_VERSION=12.17.33
+CHEF_CLIENT_VERSION=14.0.190
+# CHEF_VERSION=12.11.1
+# CHEF_CLIENT_VERSION=12.17.44
 DOCKER_COMPOSE_VERSION=1.17.1
+
+[[ `dirname $0 | cut -c1` == '/' ]] && runtimepath=`dirname $0/` || runtimepath=`pwd`/`dirname $0`
 
 function wait_apt_lock()
 {
@@ -338,8 +342,8 @@ else
 fi
 
 # Get chef client URL from parameter
-if [ -z "$PARAM_CLIENT" ]; then
-  PARAM_CLIENT=$CHEF_CLIENT
+if [ ! -z "$PARAM_CLIENT" ]; then
+  CHEF_CLIENT_VERSION=$PARAM_CLIENT
 fi
 
 if [ ! -e `dirname $0`/.advanced-runtime-config/sshkeyverified ] ; then
@@ -497,8 +501,9 @@ function install_chef() {
 
 # Download Chef client installation binaries to a well-known location. These binaries will be user by the Software Repository
 function download_chef_client() {
-  CLIENTS_FOLDER="chef-clients"
-  mkdir $CLIENTS_FOLDER
+  echo "[*] Downloading Chef Cients version: $CHEF_CLIENT_VERSION"
+  CLIENTS_FOLDER="$runtimepath/chef-clients"
+  mkdir -p $CLIENTS_FOLDER
   if [[ "$PARAM_OFFLINE" == "true" ]]; then
     if [[ -z "$PARAM_CLIENT_PATH" ]]; then
       echo "[ERROR] A path for the Chef client installers wasn't provided"
@@ -950,6 +955,17 @@ function verify_docker_ps_log()
   sudo docker system info 2>1 | xargs -i echo [INFORMATIONAL] [docker system info] {} >> $LOG_FILE
 }
 
+function verify_cronjob()
+{
+  grep -H "copyPMConfig.sh" /var/spool/cron/crontabs/*
+  if [ $? != 0 ]; then
+    echo "[INFORMATIONAL] Initializing Pattern Manager configuration cronjob"
+    (crontab -l 2>/dev/null; echo "@reboot /root/advanced-content-runtime/copyPMConfig.sh") | crontab -
+  else
+    echo "[INFORMATIONAL] Pattern Manager configuration cronjob exists"
+  fi
+}
+
 function format_disk_output()
 {
   local fs=$1
@@ -1071,6 +1087,19 @@ EndOfFile
    destination = "./advanced-content-runtime/utilities.sh"
  }
 
+ provisioner "file" {
+  content     = <<EndOfFile
+#!/bin/bash
+PM_CONFIG_BACKUP_PATH="./.advanced-runtime-config/"
+PM_CONFIG_PATH="/opt/ibm/docker/pattern-manager/config/"
+
+if [ ! -d "$PM_CONFIG_PATH" ] || [ ! -f "$PM_CONFIG_PATH/config.json" ]; then
+  sudo mkdir -p "$PM_CONFIG_PATH"
+  sudo cp $PM_CONFIG_BACKUP_PATH/config.json $PM_CONFIG_PATH
+fi
+EndOfFile
+  destination = "./advanced-content-runtime/copyPMConfig.sh"
+}
  provisioner "file" {
     content     = <<EndOfFile
 #!/bin/bash
@@ -1276,7 +1305,7 @@ EndOfFile
         "github_hostname": "$CAMHUB_HOST",
         "org": "$CAMHUB_ORG",
         "repos": "cookbook_.*",
-        "branch": "1.0"
+        "branch": "$COOKBOOK_VERSION"
 }
 EndOfFile
     destination = "./advanced-content-runtime/load.tmpl"
@@ -1395,7 +1424,7 @@ echo "Pull done, restarting containers..."
 sudo docker-compose -f $toolpath/docker-compose.yml stop
 sudo docker-compose -f $toolpath/docker-compose.yml up -d
 
-# Archive the output into the parameter file
+# Archive the output into the parameter file 
 imagename=`grep -q ".*image:.*$1:.*" $toolpath/docker-compose.yml | rev |cut -f2 -d: | cut -f1 -d/ | rev`
 sed -i "s/\(--$imagename\_version=\)\(.*\)/\1$2/" `find $toolpath -name .launch-docker-compose.sh`
 
@@ -1629,14 +1658,18 @@ CHEF_PEM=""
 CHEF_HOST=""
 CHEF_HOST_FQDN=""
 CHEF_ORG="opencontent"
-CHEF_VERSION=12.11.1
-CHEF_CLIENT_VERSION=12.17.44
+CHEF_VERSION=12.17.33
+CHEF_CLIENT_VERSION=14.0.190
+# CHEF_VERSION=12.11.1
+# CHEF_CLIENT_VERSION=12.17.44
 CHEF_CLIENT_PATH=''
 CHEF_URL="https://packages.chef.io/files/stable/chef-server/12.11.1/ubuntu/14.04/chef-server-core_12.11.1-1_amd64.deb"
 CHEF_ADMIN_PASSWORD=''
 CHEF_SSL_CERT_COUNTRY=''
 CHEF_SSL_CERT_STATE=''
 CHEF_SSL_CERT_CITY=''
+
+COOKBOOK_VERSION="2.0"
 
 ENCRYPTION_PASSPHRASE=""
 NFS_SERVER_IP_ADDR="format"
@@ -1757,6 +1790,7 @@ begin_message "Requirements Checker"
 # Check and install pre-requisites
 chmod +x $runtimepath/prereq-check-install.sh
 chmod +x $runtimepath/verify-installation.sh
+chmod +x $runtimepath/copyPMConfig.sh
 $runtimepath/prereq-check-install.sh -m "$PREREQ_STRICTNESS" -c "$CHEF_VERSION" -s "$CHEF_CLIENT_VERSION" -p "$CHEF_CLIENT_PATH" -u "$CAM_PUBLIC_KEY" -r "$CAM_PRIVATE_KEY_ENC" -e "$DOCKER_EE_REPO" -o "$INSTALLER_DOCKER_COMPOSE" -d "$INSTALLER_DOCKER" -b "$BYOCHEF" -f "$OFFLINE_INSTALL"
 end_message "Successful"
 
@@ -1885,8 +1919,12 @@ if [[ ! -e $parmdir/chef_setup.done ]]; then
 fi
 
 # Move the Chef client installation file to the SW Repo public directory
-CHEF_CLIENTS_FOLDER="chef-clients"
+CHEF_CLIENTS_FOLDER="$runtimepath/chef-clients"
 if [ -d $CHEF_CLIENTS_FOLDER ]; then
+  if [ -d $REPO_PUB_DIR ]; then
+    echo "[*] Removing existing Chef clients"
+    sudo rm -rf $REPO_PUB_DIR/*
+  fi
   sudo mkdir -p $REPO_PUB_DIR
   sudo mv $CHEF_CLIENTS_FOLDER/* $REPO_PUB_DIR/
 fi
@@ -1965,6 +2003,9 @@ if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_K
     chmod +x $runtimepath/crtconfig.py
     sudo python $runtimepath/crtconfig.py $PATTERN_MGR_ACCESS_TOKEN $PATTERN_MGR_ADMIN_TOKEN -c=encoded $CONFIG_PATH/cam_runtime_key_`hostname` $CHEF_PEM_LOC $CHEF_HOST_FQDN $CHEF_ORG $CHEF_IPADDR $CHEF_ADMIN $SOFTWARE_REPO_IP $SOFTWARE_REPO_PORT $CONFIG_PATH/config.json $CHEF_CLIENT_VERSION
 
+    # Backup the generated config file
+    cp $CONFIG_FILE $parmdir
+
     #Changing created files' permissions
     sudo chmod 755 $CONFIG_PATH/cam_runtime_key_`hostname` $CONFIG_PATH/config.json
 
@@ -2039,7 +2080,8 @@ if [[ -z $CAMHUB_ACCESS_TOKEN ]] ; then
 fi
 sed -i "s|\$CAMHUB_ACCESS_TOKEN|$CAMHUB_ACCESS_TOKEN|; \
         s|\$CAMHUB_HOST|$CAMHUB_HOST|; \
-        s|\$CAMHUB_ORG|$CAMHUB_ORG|" $runtimepath/load.json
+        s|\$CAMHUB_ORG|$CAMHUB_ORG|; \
+        s|\$COOKBOOK_VERSION|$COOKBOOK_VERSION|" $runtimepath/load.json
 
 
 end_message "Successful"
@@ -2152,6 +2194,7 @@ chef_ip_changed     = "${var.chef_ip}",
 chef_pem_changed    = "${var.chef_pem}",
 chef_org_changed    = "${var.chef_org}",
 chef_admin_changed    = "${var.chef_admin}",
+chef_client_changed   = "${var.chef_client_version}",
     cr_instance_ids = "${join(",", ibm_compute_vm_instance.single-node.*.id)}"
   }
 
@@ -2189,7 +2232,7 @@ chef_admin_changed    = "${var.chef_admin}",
   output "ibm_im_repo_password" {
   value = "${var.ibm_sw_repo_password}" }
   output "template_timestamp" {
-  value = "2018-05-22 21:17:27" }
+  value = "2018-06-13 19:03:08" }
 
 ### End IBM output variables
 output "docker_registry_token" { value = "${var.docker_registry_token}"}
