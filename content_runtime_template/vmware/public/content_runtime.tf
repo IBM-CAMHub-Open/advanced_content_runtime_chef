@@ -5,72 +5,312 @@
 
 ### Input Section
 
+variable "docker_registry_token" {
+  type = "string"
+}
 
- variable "docker_registry_token" { type = "string" }
- variable "docker_registry" { type = "string" }
- variable "docker_registry_camc_pattern_manager_version" { type = "string" }
- variable "docker_registry_camc_sw_repo_version" { type = "string" }
- variable "ibm_sw_repo_user" { type = "string" }
- variable "ibm_sw_repo_password" { type = "string" }
- variable "ibm_sw_repo_port" { type = "string" }
- variable "ibm_sw_repo_secure_port" { type = "string" }
- variable "chef_client_version" { type = "string" }
- variable "chef_client_path" { type = "string" }
- variable "ibm_im_repo_user_hidden" { type = "string" }
- variable "ibm_im_repo_password_hidden" { type = "string" }
- variable "ibm_contenthub_git_host" { type = "string" }
- variable "ibm_contenthub_git_organization" { type = "string" }
- variable "ibm_openhub_git_organization" { type = "string" }
- variable "offline_installation" { type = "string" }
- variable "docker_ee_repo" { type = "string" }
- variable "chef_org" { type = "string" }
- variable "chef_admin" { type = "string" }
- variable "byochef" { type = "string" }
- variable "install_cookbooks" { type = "string" }
- variable "chef_fqdn" { type = "string" }
- variable "chef_ip" { type = "string" }
- variable "chef_pem" { type = "string" }
- variable "ibm_pm_access_token" { type = "string" }
- variable "ibm_pm_admin_token" { type = "string" }
- variable "ibm_pm_public_ssh_key_name" { type = "string" }
- variable "ibm_pm_private_ssh_key" { type = "string" }
- variable "ibm_pm_public_ssh_key" { type = "string" }
- variable "user_public_ssh_key" { type = "string" }
- variable "template_timestamp_hidden" { type = "string" }
- variable "template_debug" { type = "string" }
- variable "runtime_hostname" { type = "string" }
- variable "vsphere_datacenter" { type = "string" }
- variable "vsphere_folder" { type = "string" }
- variable "vsphere_datastore" { type = "string" }
- variable "vsphere_default_resource_pool" { type = "string" }
- variable "runtime_keep_on_remove" { type = "string" }
- variable "vsphere_adapter_type" { type = "string" }
- variable "runtime_domain" { type = "string" }
- variable "cores" { type = "string" }
- variable "memory" { type = "string" }
- variable "nfs_mount" { type = "string" }
- variable "vsphere_dns" { type = "list" }
- variable "vsphere_dns_suffix_list" { type = "list" }
- variable "disk1_template" { type = "string" }
- variable "disk1_size" { type = "string" }
- variable "disk2_name" { type = "string" }
- variable "disk2_size" { type = "string" }
- variable "network_label" { type = "string" }
- variable "ipv4_address" { type = "string" }
- variable "ipv4_gateway" { type = "string" }
- variable "ipv4_netmask" { type = "string" }
- variable "vmware_image_ssh_user" { type = "string" }
- variable "vmware_image_ssh_password" { type = "string" }
- variable "vmware_image_ssh_private_key" { type = "string" }
- variable "network_visibility" { type = "string" }
- variable "prereq_strictness" { type = "string" }
- variable "portable_private_ip" { type = "string" }
- variable "encryption_passphrase" { type = "string" }
- variable "installer_docker" { type = "string" }
- variable "installer_docker_compose" { type = "string" }
- variable "sw_repo_image" { type = "string" }
- variable "pm_image" { type = "string" }
- variable "chef_version" { type = "string" }
+variable "docker_registry" {
+  type = "string"
+}
+
+variable "docker_registry_camc_pattern_manager_version" {
+  type = "string"
+}
+
+variable "docker_registry_camc_sw_repo_version" {
+  type = "string"
+}
+
+variable "ibm_sw_repo_user" {
+  type = "string"
+}
+
+variable "ibm_sw_repo_password" {
+  type = "string"
+}
+
+variable "ibm_sw_repo_port" {
+  type = "string"
+}
+
+variable "ibm_sw_repo_secure_port" {
+  type = "string"
+}
+
+variable "chef_client_version" {
+  type = "string"
+}
+
+variable "chef_client_path" {
+  type = "string"
+}
+
+variable "ibm_im_repo_user_hidden" {
+  type = "string"
+}
+
+variable "ibm_im_repo_password_hidden" {
+  type = "string"
+}
+
+variable "ibm_contenthub_git_host" {
+  type = "string"
+}
+
+variable "ibm_contenthub_git_organization" {
+  type = "string"
+}
+
+variable "ibm_openhub_git_organization" {
+  type = "string"
+}
+
+variable "offline_installation" {
+  type = "string"
+}
+
+variable "docker_ee_repo" {
+  type = "string"
+}
+
+variable "chef_org" {
+  type = "string"
+}
+
+variable "chef_admin" {
+  type = "string"
+}
+
+variable "byochef" {
+  type = "string"
+}
+
+variable "install_cookbooks" {
+  type = "string"
+}
+
+variable "chef_fqdn" {
+  type = "string"
+}
+
+variable "chef_ip" {
+  type = "string"
+}
+
+variable "chef_pem" {
+  type = "string"
+}
+
+variable "ibm_pm_access_token" {
+  type = "string"
+}
+
+variable "ibm_pm_admin_token" {
+  type = "string"
+}
+
+variable "ibm_pm_public_ssh_key_name" {
+  type = "string"
+}
+
+variable "ibm_pm_private_ssh_key" {
+  type = "string"
+}
+
+variable "ibm_pm_public_ssh_key" {
+  type = "string"
+}
+
+variable "user_public_ssh_key" {
+  type = "string"
+}
+
+variable "template_timestamp_hidden" {
+  type = "string"
+}
+
+variable "template_debug" {
+  type = "string"
+}
+
+variable "runtime_hostname" {
+  type = "string"
+}
+
+variable "vsphere_datacenter" {
+  type = "string"
+}
+
+variable "vsphere_folder" {
+  type = "string"
+}
+
+variable "vsphere_datastore" {
+  type = "string"
+}
+
+variable "vsphere_default_resource_pool" {
+  type = "string"
+}
+
+variable "runtime_keep_on_remove" {
+  type = "string"
+}
+
+variable "vsphere_adapter_type" {
+  type = "string"
+}
+
+variable "runtime_domain" {
+  type = "string"
+}
+
+variable "cores" {
+  type = "string"
+}
+
+variable "memory" {
+  type = "string"
+}
+
+variable "nfs_mount" {
+  type = "string"
+}
+
+variable "vsphere_dns" {
+  type = "list"
+}
+
+variable "vsphere_dns_suffix_list" {
+  type = "list"
+}
+
+variable "disk1_template" {
+  type = "string"
+}
+
+variable "disk1_size" {
+  type = "string"
+}
+
+variable "disk2_name" {
+  type = "string"
+}
+
+variable "disk2_size" {
+  type = "string"
+}
+
+variable "network_label" {
+  type = "string"
+}
+
+variable "ipv4_address" {
+  type = "string"
+}
+
+variable "ipv4_gateway" {
+  type = "string"
+}
+
+variable "ipv4_netmask" {
+  type = "string"
+}
+
+variable "vmware_image_ssh_user" {
+  type = "string"
+}
+
+variable "vmware_image_ssh_password" {
+  type = "string"
+}
+
+variable "vmware_image_ssh_private_key" {
+  type = "string"
+}
+
+variable "network_visibility" {
+  type = "string"
+}
+
+variable "prereq_strictness" {
+  type = "string"
+}
+
+variable "portable_private_ip" {
+  type = "string"
+}
+
+variable "encryption_passphrase" {
+  type = "string"
+}
+
+variable "installer_docker" {
+  type = "string"
+}
+
+variable "installer_docker_compose" {
+  type = "string"
+}
+
+variable "sw_repo_image" {
+  type = "string"
+}
+
+variable "pm_image" {
+  type = "string"
+}
+
+variable "chef_version" {
+  type = "string"
+}
+
+###
+#Bastion host variables
+###
+variable "bastion_host" {
+  type = "string"
+}
+
+variable "bastion_user" {
+  type = "string"
+}
+
+variable "bastion_private_key" {
+  type = "string"
+}
+
+variable "bastion_port" {
+  type = "string"
+}
+
+variable "bastion_host_key" {
+  type = "string"
+}
+
+variable "bastion_password" {
+  type = "string"
+}
+
+###
+#HTTP Proxy variables
+###
+variable "http_proxy_host" {
+  type    = "string"
+}
+
+variable "http_proxy_user" {
+  type    = "string"
+}
+
+variable "http_proxy_port" {
+  type    = "string"
+}
+
+variable "http_proxy_password" {
+  type    = "string"
+}
+
 
 ### End Input Section
 
@@ -79,7 +319,7 @@ provider "null" {
 }
 
 provider "vsphere" {
-  version = "~> 1.3"
+  version              = "~> 1.3"
   allow_unverified_ssl = true
 }
 
@@ -88,40 +328,42 @@ data "vsphere_datacenter" "input_datacenter" {
 }
 
 data "vsphere_datastore" "input_datastore" {
-  name = "${var.vsphere_datastore}"
+  name          = "${var.vsphere_datastore}"
   datacenter_id = "${data.vsphere_datacenter.input_datacenter.id}"
 }
 
 data "vsphere_resource_pool" "input_resource_pool" {
-  name = "${var.vsphere_default_resource_pool}"
+  name          = "${var.vsphere_default_resource_pool}"
   datacenter_id = "${data.vsphere_datacenter.input_datacenter.id}"
 }
 
 data "vsphere_network" "input_network" {
-  name = "${var.network_label}"
+  name          = "${var.network_label}"
   datacenter_id = "${data.vsphere_datacenter.input_datacenter.id}"
 }
 
 data "vsphere_virtual_machine" "input_template" {
-  name = "${var.disk1_template}"
+  name          = "${var.disk1_template}"
   datacenter_id = "${data.vsphere_datacenter.input_datacenter.id}"
 }
 
 resource "vsphere_virtual_machine" "singlenode" {
-  name = "${var.runtime_hostname}"
-  num_cpus = "${var.cores}"
-  memory = "${var.memory}"
-  datastore_id = "${data.vsphere_datastore.input_datastore.id}"
-  folder = "${var.vsphere_folder}"
+  name             = "${var.runtime_hostname}"
+  num_cpus         = "${var.cores}"
+  memory           = "${var.memory}"
+  datastore_id     = "${data.vsphere_datastore.input_datastore.id}"
+  folder           = "${var.vsphere_folder}"
   resource_pool_id = "${data.vsphere_resource_pool.input_resource_pool.id}"
-  guest_id = "${data.vsphere_virtual_machine.input_template.guest_id}"
+  guest_id         = "${data.vsphere_virtual_machine.input_template.guest_id}"
+
   # wait_for_guest_net = false
 
   clone {
     template_uuid = "${data.vsphere_virtual_machine.input_template.id}"
+
     customize {
       linux_options {
-        domain = "${var.runtime_domain}"
+        domain    = "${var.runtime_domain}"
         host_name = "${var.runtime_hostname}"
       }
 
@@ -129,50 +371,51 @@ resource "vsphere_virtual_machine" "singlenode" {
         ipv4_address = "${var.ipv4_address}"
         ipv4_netmask = "${var.ipv4_netmask}"
       }
-      ipv4_gateway = "${var.ipv4_gateway}"
+
+      ipv4_gateway    = "${var.ipv4_gateway}"
       dns_server_list = "${var.vsphere_dns}"
       dns_suffix_list = "${var.vsphere_dns_suffix_list}"
     }
   }
-
   network_interface {
-    network_id = "${data.vsphere_network.input_network.id}"
+    network_id   = "${data.vsphere_network.input_network.id}"
     adapter_type = "${var.vsphere_adapter_type}"
   }
-
   disk {
     # template or vmdk
-    label = "${var.runtime_hostname}.vmdk"
-    size = "${var.disk1_size}"
+    label          = "${var.runtime_hostname}.vmdk"
+    size           = "${var.disk1_size}"
     keep_on_remove = "${var.runtime_keep_on_remove}"
-    datastore_id = "${data.vsphere_datastore.input_datastore.id}"
+    datastore_id   = "${data.vsphere_datastore.input_datastore.id}"
   }
-
   disk {
-    unit_number = 1
-    label = "${var.runtime_hostname}-swrepo.vmdk"
-    size = "${var.disk2_size}"
+    unit_number    = 1
+    label          = "${var.runtime_hostname}-swrepo.vmdk"
+    size           = "${var.disk2_size}"
     keep_on_remove = "${var.runtime_keep_on_remove}"
-    datastore_id = "${data.vsphere_datastore.input_datastore.id}"
+    datastore_id   = "${data.vsphere_datastore.input_datastore.id}"
   }
-
   # Set the ssh connection using the private generted ssh key
   connection {
-    host = "${var.ipv4_address}"
-    type = "ssh"
-    user = "${var.vmware_image_ssh_user}"
-    password = "${var.vmware_image_ssh_password}"
-    private_key = "${ length(var.vmware_image_ssh_private_key) > 0 ? base64decode(var.vmware_image_ssh_private_key) : var.vmware_image_ssh_private_key}"
+    host                = "${var.ipv4_address}"
+    type                = "ssh"
+    user                = "${var.vmware_image_ssh_user}"
+    password            = "${var.vmware_image_ssh_password}"
+    private_key         = "${ length(var.vmware_image_ssh_private_key) > 0 ? base64decode(var.vmware_image_ssh_private_key) : var.vmware_image_ssh_private_key}"
+    bastion_host        = "${var.bastion_host}"
+    bastion_user        = "${var.bastion_user}"
+    bastion_private_key = "${ length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
+    bastion_port        = "${var.bastion_port}"
+    bastion_host_key    = "${var.bastion_host_key}"
+    bastion_password    = "${var.bastion_password}"
   }
-
   provisioner "remote-exec" {
     inline = [
-        "mkdir -p ./advanced-content-runtime"
-      ]
-   }
-
-provisioner "file" {
-   content     = <<EndOfFile
+      "mkdir -p ./advanced-content-runtime",
+    ]
+  }
+  provisioner "file" {
+    content = <<EndOfFile
 #!/bin/bash
 #
 # Copyright : IBM Corporation 2016, 2017
@@ -633,11 +876,11 @@ if [ $RESULT -eq 1 ]; then
   exit 1
 fi
 EndOfFile
-   destination = "./advanced-content-runtime/prereq-check-install.sh"
- }
 
- provisioner "file" {
-    content     = <<EndOfFile
+    destination = "./advanced-content-runtime/prereq-check-install.sh"
+  }
+  provisioner "file" {
+    content = <<EndOfFile
 #!/bin/bash
 #
 # Copyright : IBM Corporation 2016, 2017
@@ -1024,11 +1267,11 @@ verify_software_directory
 verify_software_repo_directory
 verify_docker_ps_log
 EndOfFile
+
     destination = "./advanced-content-runtime/verify-installation.sh"
   }
-
   provisioner "file" {
-   content     = <<EndOfFile
+    content = <<EndOfFile
 #!/bin/bash
 #
 # Copyright : IBM Corporation 2016, 2017
@@ -1085,12 +1328,47 @@ function load_docker_image {
     docker image load -q < $2
   fi
 }
-EndOfFile
-   destination = "./advanced-content-runtime/utilities.sh"
- }
+#Get platform
+function get_platform() {
+  PLATFORM=""
+  if command_exists python; then
+    PLATFORM=`python -c "import platform;print(platform.platform())" | rev | cut -d '-' -f3 | rev | tr -d '".' | tr '[:upper:]' '[:lower:]'`
+  else
+    if command_exists python3; then
+      PLATFORM=`python3 -c "import platform;print(platform.platform())" | rev | cut -d '-' -f3 | rev | tr -d '".' | tr '[:upper:]' '[:lower:]'`
+    fi
+  fi
 
- provisioner "file" {
-  content     = <<EndOfFile
+  # Check if the executing platform is supported
+  if [[ $PLATFORM == *"ubuntu"* ]] || [[ $PLATFORM == *"redhat"* ]] || [[ $PLATFORM == *"rhel"* ]] || [[ $PLATFORM == *"centos"* ]]; then
+    echo "$PLATFORM"
+  else
+    echo "ERROR"
+  fi
+}
+
+#Get platform version
+function get_platform_version() {
+  PLATFORM_VERSION=""
+  if command_exists python; then
+    PLATFORM_VERSION=`python -c "import platform;print(platform.platform())" | rev | cut -d '-' -f2 | rev`
+  else
+    if command_exists python3; then
+      PLATFORM_VERSION=`python3 -c "import platform;print(platform.platform())" | rev | cut -d '-' -f2 | rev`
+    fi
+  fi
+  if [[ -z PLATFORM_VERSION ]]; then
+    echo "ERROR"
+  else
+    echo $PLATFORM_VERSION
+  fi
+}
+EndOfFile
+
+    destination = "./advanced-content-runtime/utilities.sh"
+  }
+  provisioner "file" {
+    content = <<EndOfFile
 #!/bin/bash
 PM_CONFIG_BACKUP_PATH="./.advanced-runtime-config/"
 PM_CONFIG_PATH="/opt/ibm/docker/pattern-manager/config/"
@@ -1100,10 +1378,11 @@ if [ ! -d "$PM_CONFIG_PATH" ] || [ ! -f "$PM_CONFIG_PATH/config.json" ]; then
   sudo cp $PM_CONFIG_BACKUP_PATH/config.json $PM_CONFIG_PATH
 fi
 EndOfFile
-  destination = "./advanced-content-runtime/copyPMConfig.sh"
-}
- provisioner "file" {
-    content     = <<EndOfFile
+
+    destination = "./advanced-content-runtime/copyPMConfig.sh"
+  }
+  provisioner "file" {
+    content = <<EndOfFile
 #!/bin/bash
 # encoding: UTF-8
 ########################################################
@@ -1203,10 +1482,10 @@ if [ $rc -gt 0 ]; then
 fi
 exit $rc
 EndOfFile
+
     destination = "./advanced-content-runtime/setupchef.sh"
   }
-
- provisioner "file" {
+  provisioner "file" {
     content = <<EndOfFile
 #!/usr/bin/env python
 
@@ -1238,6 +1517,10 @@ parser.add_argument("software_repo_ip")
 parser.add_argument("software_repo_unsecured_port")
 parser.add_argument("target_file", default="pm_config.json")
 parser.add_argument("chef_client_version", default="14.0.202")
+parser.add_argument("-ph", nargs="?",default="")
+parser.add_argument("-ppr",nargs="?",default="")
+parser.add_argument("-pu", nargs="?",default="")
+parser.add_argument("-pp", nargs="?",default="")
 args = parser.parse_args()
 
 with open(args.cam_service_key_loc, "r") as f:
@@ -1253,6 +1536,23 @@ if args.p == "unencoded":
     pem_raw = base64.b64encode(pem_data)
 else:
     pem_raw = pem_data
+    
+"""
+Variables for HTTP Proxy.
+"""    
+httpHost = ""
+httpPort = "3128"
+httpUser = ""
+httpPassword = ""
+
+if args.ph:
+  httpHost = args.ph
+if args.ppr:
+  httpPort = args.ppr
+if args.pu:
+  httpUser = args.pu
+if args.pp:
+  httpPassword = args.pp
 
 pm_config = {
     "access_tokens": {
@@ -1275,6 +1575,12 @@ pm_config = {
             "software_repo_unsecured_port": args.software_repo_unsecured_port,
             "chef_client_version": args.chef_client_version
         }
+    },
+    "proxies":{
+      "http_proxy_host": httpHost,
+      "http_proxy_port": httpPort,
+      "http_proxy_user": httpUser,
+      "http_proxy_password": httpPassword
     }
 }
 
@@ -1285,11 +1591,11 @@ with open(args.target_file, "w") as f:
 
 sys.exit()
 EndOfFile
+
     destination = "./advanced-content-runtime/crtconfig.py"
   }
-
- provisioner "file" {
-    content     = <<EndOfFile
+  provisioner "file" {
+    content = <<EndOfFile
 opscode_erchef['s3_url_ttl'] = 3600
 nginx['ssl_certificate'] = "CUSTOMPEM"
 nginx['ssl_certificate_key'] = "CUSTOMKEY"
@@ -1297,11 +1603,11 @@ nginx['ssl_ciphers'] = "HIGH:MEDIUM:!LOW:!kEDH:!aNULL:!ADH:!eNULL:!EXP:!SSLv2:!S
 nginx['ssl_protocols'] = "TLSv1 TLSv1.1 TLSv1.2"
 nginx['stub_status'] = { :listen_port => 7777, :listen_host => '127.0.0.1' }
 EndOfFile
+
     destination = "./advanced-content-runtime/chef-server.rb"
   }
-
   provisioner "file" {
-    content     = <<EndOfFile
+    content = <<EndOfFile
 {
 	"authorization": { "personal_access_token": "$CAMHUB_ACCESS_TOKEN"},
         "github_hostname": "$CAMHUB_HOST",
@@ -1310,11 +1616,11 @@ EndOfFile
         "branch": "$COOKBOOK_VERSION"
 }
 EndOfFile
+
     destination = "./advanced-content-runtime/load.tmpl"
   }
-
   provisioner "file" {
-    content     = <<EndOfFile
+    content = <<EndOfFile
   #camc-pattern-manager
   camc-pattern-manager:
     image: $DOCKER_REGISTRY_PATH/camc-pattern-manager:$PATTERN_MGR_VERSION
@@ -1338,11 +1644,11 @@ EndOfFile
       - $CHEF_HOST_FQDN:$CHEF_IPADDR
       - $SOFTWARE_REPO_FQDN:$SOFTWARE_REPO_IP
 EndOfFile
+
     destination = "./advanced-content-runtime/camc-pattern-manager.tmpl"
   }
-
   provisioner "file" {
-    content     = <<EndOfFile
+    content = <<EndOfFile
   #camc-sw-repo
   camc-sw-repo:
     image: $DOCKER_REGISTRY_PATH/camc-sw-repo:$SOFTWARE_REPO_VERSION
@@ -1366,11 +1672,11 @@ EndOfFile
       - "$SOFTWARE_REPO_SECURE_PORT:$SOFTWARE_REPO_SECURE_PORT"
     privileged: true
 EndOfFile
+
     destination = "./advanced-content-runtime/camc-sw-repo.tmpl"
   }
-
   provisioner "file" {
-    content     = <<EndOfFile
+    content = <<EndOfFile
 #
 # Copyright : IBM Corporation 2016, 2016
 #
@@ -1381,11 +1687,11 @@ version: '2'
 services:
 
 EndOfFile
+
     destination = "./advanced-content-runtime/infra-docker-compose.tmpl"
   }
-
   provisioner "file" {
-    content     = <<EndOfFile
+    content = <<EndOfFile
 #!/bin/bash
 #
 # Copyright : IBM Corporation 2017. All rights reserved.
@@ -1432,11 +1738,11 @@ sed -i "s/\(--$imagename\_version=\)\(.*\)/\1$2/" `find $toolpath -name .launch-
 
 echo "Done."
 EndOfFile
+
     destination = "./advanced-content-runtime/image-upgrade.sh"
   }
-
   provisioner "file" {
-    content     = <<EndOfFile
+    content = <<EndOfFile
 # Properties file used to create the directory structure on the location disk
 # All path are relative to ROOT : /opt/ibm/docker/software-repo/var/swRepo/private
 apache/httpd/v2.4.25/rhel7
@@ -1454,22 +1760,22 @@ wmq/v8.0/maint
 wmq/v9.0/base
 wmq/v9.0/maint
 EndOfFile
+
     destination = "./advanced-content-runtime/mkdir.properties"
   }
-
   provisioner "file" {
-    content     = <<EndOfFile
+    content = <<EndOfFile
 LayoutPolicyVersion=0.0.0.1
 LayoutPolicy=Composite
 #repository.url.was=./WAS9
 #repository.url.liberty=./Liberty
 #repository.url.jdk8=./jdk8
 EndOfFile
+
     destination = "./advanced-content-runtime/repository.config"
   }
-
   provisioner "file" {
-    content     = <<EndOfFile
+    content = <<EndOfFile
 #
 # Copyright : IBM Corporation 2016, 2016
 #
@@ -1706,6 +2012,11 @@ CAM_PRIVATE_KEY_ENC=""
 CAM_PUBLIC_KEY=""
 CAM_PUBLIC_KEY_NAME=""
 USER_PUBLIC_KEY=""
+HTTP_PROXY_HOST=""
+HTTP_PROXY_USER=""
+HTTP_PROXY_KEY=""
+HTTP_PROXY_PASSWORD=""
+HTTP_PROXY_URL=""
 
 help=false
 DEBUG=false
@@ -1715,6 +2026,10 @@ PRIVATE_NETWORK=`head -n1 $parmfile` # pull off the first parameter indicating t
 # Parse parameters from the command line, allow a parameter name, or parameter value, - options will only consume the first character
 set +o errexit
 while IFS='' read -r parameter || [[ -n "$parameter" ]]; do
+        [[ $parameter =~ ^-ph|--http_proxy_host= ]] && { HTTP_PROXY_HOST=`echo $parameter|cut -f2- -d'='`; continue;  };
+        [[ $parameter =~ ^-pr|--http_proxy_port= ]] && { HTTP_PROXY_PORT=`echo $parameter|cut -f2- -d'='`; continue;  };
+        [[ $parameter =~ ^-pu|--http_proxy_user= ]] && { HTTP_PROXY_USER=`echo $parameter|cut -f2- -d'='`; continue;  };
+        [[ $parameter =~ ^-hp|--http_proxy_password= ]] && { HTTP_PROXY_PASSWORD=`echo $parameter|cut -f2- -d'='`; continue;  };                
         [[ $parameter =~ ^-cpu|--ibm_pm_public_ssh_key_name= ]] && { CAM_PUBLIC_KEY_NAME=`echo $parameter|cut -f2- -d'='`; continue;  }; # unused
         [[ $parameter =~ ^-cpr|--ibm_pm_private_ssh_key= ]] && { CAM_PRIVATE_KEY_ENC=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-cpp|--ibm_pm_public_ssh_key= ]] && { CAM_PUBLIC_KEY=`echo $parameter|cut -f2- -d'='`; continue;  };
@@ -1726,7 +2041,7 @@ while IFS='' read -r parameter || [[ -n "$parameter" ]]; do
         [[ $parameter =~ ^-de|--docker_ee_repo= ]] && { DOCKER_EE_REPO=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-dc|--docker_configuration= ]] && { CONFIGURATION=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-bc|--byochef= ]] && { BYOCHEF=`echo $parameter|cut -f2- -d'='| tr '[:upper:]' '[:lower:]'`; continue;  };
-        [[ $parameter =~ ^-of|--offline_installation= ]] && { OFFLINE_INSTALL=`echo $parameter|cut -f2- -d'='`| tr '[:upper:]' '[:lower:]'; continue;  };
+        [[ $parameter =~ ^-of|--offline_installation= ]] && { OFFLINE_INSTALL=`echo $parameter|cut -f2- -d'='| tr '[:upper:]' '[:lower:]'`; continue;  };
         [[ $parameter =~ ^-ca|--chef_admin= ]] && { CHEF_ADMIN=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-ch|--chef_host= ]] && { CHEF_HOST=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-co|--chef_org= ]] && { CHEF_ORG=`echo $parameter|cut -f2- -d'='`; continue;  };
@@ -1788,6 +2103,80 @@ fi
 echo "[*] Template Timestamp: $TEMPLATE_TIMESTAMP"
 end_message "Successful"
 
+###
+#Process HTTP Proxy Variables
+###
+if [[ -z "$HTTP_PROXY_HOST" ]]; then  
+  begin_message "Content runtime is outside proxy."
+else
+  PLATFORM=$(get_platform)
+  if [[ "$PLATFORM" == "ERROR" ]] ; then
+    echo "[ERROR] Platform $PLATFORM not supported"
+    exit 1      
+  fi
+  PLATFORM_VERSION=$(get_platform_version)
+  echo "[*] Platform identified as: $PLATFORM $PLATFORM_VERSION"  
+  
+  ###
+  #Change visudo to carry over proxy env variables.
+  ###  
+  begin_message "Set sudoers file for proxy env variables"
+  touch /etc/sudoers.tmp
+  cp /etc/sudoers /tmp/sudoers.mod
+  echo 'Defaults env_keep += "http_proxy https_proxy no_proxy"' >> /tmp/sudoers.mod
+  sudo visudo -c -f /tmp/sudoers.mod
+  if [ "$?" -eq "0" ]; then
+    sudo mv /tmp/sudoers.mod /etc/sudoers
+  fi
+  rm /etc/sudoers.tmp  
+  
+  ###
+  #Manipulate input to required format
+  ###  
+  HTTP_PROXY_URL=HTTP_PROXY_HOST
+  PROTOCOL="$(echo $HTTP_PROXY_HOST |  grep :// | sed -e 's/^\(.*:\/\/\).*/\1/g')"	
+  HTTP_PROXY_HOST=`echo $${HTTP_PROXY_HOST/$PROTOCOL/}`
+
+  begin_message "Set http proxy environment variables"  
+  HTTP_PROXY_VAR=$PROTOCOL
+  HTTPS_PROXY_VAR=$PROTOCOL
+  if [[ -n "HTTP_PROXY_USER" && -n "HTTP_PROXY_PASSWORD" ]]; then
+    HTTP_PROXY_VAR="$HTTP_PROXY_VAR$HTTP_PROXY_USER:$HTTP_PROXY_PASSWORD@"
+    HTTPS_PROXY_VAR="$HTTPS_PROXY_VAR$HTTP_PROXY_USER:$HTTP_PROXY_PASSWORD@"
+  fi
+  HTTP_PROXY_VAR="$HTTP_PROXY_VAR$HTTP_PROXY_HOST"
+  HTTPS_PROXY_VAR="$HTTPS_PROXY_VAR$HTTP_PROXY_HOST"
+  if [[ -n "HTTP_PROXY_PORT"  ]]; then
+    HTTP_PROXY_VAR="$HTTP_PROXY_VAR:$HTTP_PROXY_PORT"
+    HTTPS_PROXY_VAR="$HTTPS_PROXY_VAR:$HTTP_PROXY_PORT"
+  fi
+  ###
+  #Set env variables
+  ###    
+  export http_proxy=$HTTP_PROXY_VAR
+  export https_proxy=$HTTPS_PROXY_VAR
+  NO_PROXY="127.0.0.1,localhost"
+  export no_proxy=$NO_PROXY
+  echo "export http_proxy=$HTTP_PROXY_VAR" >> /etc/profile.d/proxy-env-var.sh
+  echo "export https_proxy=$HTTPS_PROXY_VAR" >> /etc/profile.d/proxy-env-var.sh
+  echo "export no_proxy=$NO_PROXY" >> /etc/profile.d/proxy-env-var.sh
+  ###
+  #Set apt and yum
+  ###    
+  if [[ $PLATFORM == *"ubuntu"* ]]; then    
+    echo Acquire::http::Proxy \"$${HTTP_PROXY_VAR}/\"\; >> /etc/apt/apt.conf
+    echo Acquire::https::Proxy \"$${HTTPS_PROXY_VAR}/\"\; >> /etc/apt/apt.conf
+  else  
+    RHEL_HTTP_PROXY_VAR="proxy=$PROTOCOL$HTTP_PROXY_HOST"
+    if [[ -n "HTTP_PROXY_PORT"  ]]; then
+      RHEL_HTTP_PROXY_VAR="$RHEL_HTTP_PROXY_VAR:$HTTP_PROXY_PORT"
+      #RHEL_HTTPS_PROXY_VAR="$RHEL_HTTPS_PROXY_VAR:$HTTP_PROXY_PORT"
+    fi
+    RHEL_HTTP_PROXY_PASSWORD="proxy_password=$HTTP_PROXY_PASSWORD"
+    RHEL_HTTP_PROXY_USER="proxy_username=$HTTP_PROXY_USER"
+    sed -i "/\[main\]/a $RHEL_HTTP_PROXY_VAR\n$RHEL_HTTP_PROXY_PASSWORD\n$RHEL_HTTP_PROXY_USER" /etc/yum.conf
+  fi  
+fi
 begin_message "Requirements Checker"
 # Check and install pre-requisites
 chmod +x $runtimepath/prereq-check-install.sh
@@ -1840,6 +2229,31 @@ if [[ ! `sudo ls /etc/docker/daemon.json 2>/dev/null` ]]; then
   docker_disk
   [[ `which systemctl` ]] && { echo -n "$ENCRYPTION_PASSPHRASE" | sudo systemctl start docker || true ; } || { echo -n "$ENCRYPTION_PASSPHRASE" | sudo service docker start || true ; }
 fi
+###
+#Set proxy for docker engine.
+###  
+if [[ -z "$HTTP_PROXY_HOST" ]]; then  
+  begin_message "Http proxy empty. Do not configure docker proxy."
+else
+  begin_message "Configure docker proxy."
+  if [[ `which systemctl` ]]; then
+    if [ ! -d "/etc/systemd/system/docker.service.d" ]; then
+      sudo mkdir -p /etc/systemd/system/docker.service.d
+    fi  
+    sudo echo "[Service]" > /etc/systemd/system/docker.service.d/http-proxy.conf 
+    sudo echo "Environment=\"HTTP_PROXY=$HTTP_PROXY_VAR/\" \"NO_PROXY=$NO_PROXY\"" >> /etc/systemd/system/docker.service.d/http-proxy.conf 
+    sudo echo "[Service]" > /etc/systemd/system/docker.service.d/https-proxy.conf 
+    sudo echo "Environment=\"HTTPS_PROXY=$HTTP_PROXY_VAR/\" \"NO_PROXY=$NO_PROXY\"" >> /etc/systemd/system/docker.service.d/https-proxy.conf  
+    sudo systemctl daemon-reload
+    echo -n "$ENCRYPTION_PASSPHRASE" | sudo systemctl restart docker
+    #sudo systemctl show --property=Environment docker 
+  else    
+    sudo echo "export http_proxy=\"$HTTP_PROXY_VAR/\"" >> /etc/default/docker
+    sudo echo "export https_proxy=\"$HTTPS_PROXY_VAR/\"" >> /etc/default/docker
+    sudo echo "export no_proxy=\"$NO_PROXY\"" >> /etc/default/docker
+    echo -n "$ENCRYPTION_PASSPHRASE" | sudo service docker restart
+  fi
+fi
 end_message "Successful"
 
 begin_message "Environment"
@@ -1873,6 +2287,20 @@ fi
 
 [[ -z "$DOMAIN" ]] && { CHEF_HOST_FQDN=$CHEF_HOST ; SOFTWARE_REPO_FQDN=$SOFTWARE_REPO ; PATTERN_MGR_FQDN=$PATTERN_MGR ; } || { CHEF_HOST_FQDN=$CHEF_HOST.$DOMAIN ; SOFTWARE_REPO_FQDN=$SOFTWARE_REPO.$DOMAIN ; PATTERN_MGR_FQDN=$PATTERN_MGR.$DOMAIN ; }
 
+###
+#Add SOFTWARE_REPO_FQDN and PATTERN_MGR_FQDN to no proxy list
+###
+if [[ ! -z "$HTTP_PROXY_HOST" ]]; then 
+  NO_PROXY="127.0.0.1,localhost,$${SOFTWARE_REPO_FQDN},$${PATTERN_MGR_FQDN}"
+  if [[ "$BYOCHEF" == "false" ]]; then
+    NO_PROXY="$${NO_PROXY},$${CHEF_HOST_FQDN}"
+  fi
+  echo "export no_proxy=$NO_PROXY"
+  sed -i '/export no_proxy=/d' /etc/profile.d/proxy-env-var.sh
+  echo "export no_proxy=$NO_PROXY" >>/etc/profile.d/proxy-env-var.sh
+else
+	begin_message "Http proxy empty. Do not configure no proxy variable."
+fi
 # Setup the path to images ... we support other repos
 dockerhub="ibmcom"
 otherhub="$DOCKER_REGISTRY/$DOCKER_IMAGE_PATH"
@@ -2003,7 +2431,8 @@ if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_K
 
     #Config File Creation Script
     chmod +x $runtimepath/crtconfig.py
-    sudo python $runtimepath/crtconfig.py $PATTERN_MGR_ACCESS_TOKEN $PATTERN_MGR_ADMIN_TOKEN -c=encoded $CONFIG_PATH/cam_runtime_key_`hostname` $CHEF_PEM_LOC $CHEF_HOST_FQDN $CHEF_ORG $CHEF_IPADDR $CHEF_ADMIN $SOFTWARE_REPO_IP $SOFTWARE_REPO_PORT $CONFIG_PATH/config.json $CHEF_CLIENT_VERSION
+    #echo python $runtimepath/crtconfig.py $PATTERN_MGR_ACCESS_TOKEN $PATTERN_MGR_ADMIN_TOKEN -c=encoded $CONFIG_PATH/cam_runtime_key_`hostname` $CHEF_PEM_LOC $CHEF_HOST_FQDN $CHEF_ORG $CHEF_IPADDR $CHEF_ADMIN $SOFTWARE_REPO_IP $SOFTWARE_REPO_PORT $CONFIG_PATH/config.json $CHEF_CLIENT_VERSION -ph $HTTP_PROXY_URL -ppr $HTTP_PROXY_PORT -pu $HTTP_PROXY_USER -pp "$HTTP_PROXY_PASSWORD"
+    sudo python $runtimepath/crtconfig.py $PATTERN_MGR_ACCESS_TOKEN $PATTERN_MGR_ADMIN_TOKEN -c=encoded $CONFIG_PATH/cam_runtime_key_`hostname` $CHEF_PEM_LOC $CHEF_HOST_FQDN $CHEF_ORG $CHEF_IPADDR $CHEF_ADMIN $SOFTWARE_REPO_IP $SOFTWARE_REPO_PORT $CONFIG_PATH/config.json $CHEF_CLIENT_VERSION -ph $HTTP_PROXY_URL -ppr $HTTP_PROXY_PORT -pu $HTTP_PROXY_USER -pp "$HTTP_PROXY_PASSWORD"
 
     # Backup the generated config file
     cp $CONFIG_FILE $parmdir
@@ -2110,7 +2539,15 @@ if [[ -n $SW_REPO_IMAGE ]]; then
   echo "[*] Software Repository image provided"
   load_docker_image $SW_REPO_IMAGE sw-repository
 fi
-
+###
+#Set env variables for pattern manager and sw repo container.
+###  
+if [[ -z "$HTTP_PROXY_HOST" ]]; then  
+  begin_message "Http proxy empty. Do not configure container docker proxy."
+else
+  begin_message "Configure container docker proxy."
+  sed -i "/environment:/a\      \- http_proxy=$HTTP_PROXY_VAR\n\      \- https_proxy=$HTTPS_PROXY_VAR\n\      \- no_proxy=$NO_PROXY" $runtimepath/docker-compose.yml
+fi
 if [[ "$(sudo docker images -q $DOCKER_REGISTRY_PATH/camc-pattern-manager 2> /dev/null)" != "" ]] && [[ "$(sudo docker images -q $DOCKER_REGISTRY_PATH/camc-sw-repo 2> /dev/null)" != "" ]]; then
   echo "[*] Docker images found"
 else
@@ -2175,128 +2612,340 @@ end_message "Successful"
 #clean up
 [[ ! "$DEBUG" = "true" ]] && { sed -i -e '/^--docker_registry_token=/d' -e '/^--software_repo_pass=/d' -e '/^--im_repo_pass=/d' -e '/^--ibm_pm_private_ssh_key=/d' -e '/^--ibm_contenthub_git_access_token=/d' -e '/^--encryption_passphrase=/d'  $parmfile ; }
 EndOfFile
+
     destination = "./advanced-content-runtime/launch-docker-compose.sh"
   }
-
 } # End of vsphere_virtual_machine resource
-
 
 resource "null_resource" "call_launcher" {
   depends_on = ["vsphere_virtual_machine.singlenode"]
 
   triggers {
-private_key_changed = "${var.ibm_pm_private_ssh_key}",
-public_key_changed  = "${var.ibm_pm_public_ssh_key}",
-pm_key_name_changed  = "${var.ibm_pm_public_ssh_key_name}",
-repo_pass_changed   = "${var.ibm_sw_repo_password}",
-repo_port_changed        = "${var.ibm_sw_repo_port}",
-repo_secure_port_changed = "${var.ibm_sw_repo_secure_port}",
-chef_fqdn_changed   = "${var.chef_fqdn}",
-chef_ip_changed     = "${var.chef_ip}",
-chef_pem_changed    = "${var.chef_pem}",
-chef_org_changed    = "${var.chef_org}",
-chef_admin_changed    = "${var.chef_admin}",
-chef_client_changed   = "${var.chef_client_version}",
-    cr_instance_ids = "${join(",", vsphere_virtual_machine.singlenode.*.id)}"
+    private_key_changed      = "${var.ibm_pm_private_ssh_key}"
+    public_key_changed       = "${var.ibm_pm_public_ssh_key}"
+    pm_key_name_changed      = "${var.ibm_pm_public_ssh_key_name}"
+    repo_pass_changed        = "${var.ibm_sw_repo_password}"
+    repo_port_changed        = "${var.ibm_sw_repo_port}"
+    repo_secure_port_changed = "${var.ibm_sw_repo_secure_port}"
+    chef_fqdn_changed        = "${var.chef_fqdn}"
+    chef_ip_changed          = "${var.chef_ip}"
+    chef_pem_changed         = "${var.chef_pem}"
+    chef_org_changed         = "${var.chef_org}"
+    chef_admin_changed       = "${var.chef_admin}"
+    chef_client_changed      = "${var.chef_client_version}"
+    cr_instance_ids          = "${join(",", vsphere_virtual_machine.singlenode.*.id)}"
   }
 
   connection {
-    host = "${var.ipv4_address}"
-    type = "ssh"
-    user = "${var.vmware_image_ssh_user}"
-    password = "${var.vmware_image_ssh_password}"
-    private_key = "${ length(var.vmware_image_ssh_private_key) > 0 ? base64decode(var.vmware_image_ssh_private_key) : var.vmware_image_ssh_private_key}"
+    host                = "${var.ipv4_address}"
+    type                = "ssh"
+    user                = "${var.vmware_image_ssh_user}"
+    password            = "${var.vmware_image_ssh_password}"
+    private_key         = "${ length(var.vmware_image_ssh_private_key) > 0 ? base64decode(var.vmware_image_ssh_private_key) : var.vmware_image_ssh_private_key}"
+    bastion_host        = "${var.bastion_host}"
+    bastion_user        = "${var.bastion_user}"
+    bastion_private_key = "${ length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
+    bastion_port        = "${var.bastion_port}"
+    bastion_host_key    = "${var.bastion_host_key}"
+    bastion_password    = "${var.bastion_password}"
   }
 
   provisioner "remote-exec" {
     inline = [
-        "chmod 775 ./advanced-content-runtime/launch-docker-compose.sh",
-        "chmod 775 ./advanced-content-runtime/image-upgrade.sh",
-"bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='${var.docker_registry_token}' --nfs_mount_point='${var.nfs_mount}' --encryption_passphrase='${var.encryption_passphrase}' --software_repo_user='${var.ibm_sw_repo_user}' --software_repo_pass='${var.ibm_sw_repo_password}' --im_repo_user='${var.ibm_im_repo_user_hidden}' --im_repo_pass='${var.ibm_im_repo_password_hidden}'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='${var.ibm_sw_repo_port}' --software_repo_secure_port='${var.ibm_sw_repo_secure_port}' --pattern_mgr=pattern --ibm_contenthub_git_host='${var.ibm_contenthub_git_host}' --ibm_contenthub_git_organization='${var.ibm_contenthub_git_organization}' --ibm_openhub_git_organization='${var.ibm_openhub_git_organization}' --chef_org='${var.chef_org}' --chef_admin='${var.chef_admin}' --chef_fqdn='${var.chef_fqdn}' --chef_ip='${var.chef_ip}' --chef_pem='${var.chef_pem}' --docker_registry='${var.docker_registry}' --chef_version=${var.chef_version} --chef_client_version='${var.chef_client_version}' --chef_client_path='${var.chef_client_path}' --ibm_pm_access_token='${var.ibm_pm_access_token}' --ibm_pm_admin_token='${var.ibm_pm_admin_token}' --camc-sw-repo_version='${var.docker_registry_camc_sw_repo_version}' --docker_ee_repo='${var.docker_ee_repo}' --camc-pattern-manager_version='${var.docker_registry_camc_pattern_manager_version}' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='${var.ibm_pm_public_ssh_key_name}' --ibm_pm_private_ssh_key='${var.ibm_pm_private_ssh_key}' --ibm_pm_public_ssh_key='${var.ibm_pm_public_ssh_key}' --user_public_ssh_key='${var.user_public_ssh_key}' --prereq_strictness='${var.prereq_strictness}' --ip_address='${var.ipv4_address}' --template_timestamp='${var.template_timestamp_hidden}' --installer_docker='${var.installer_docker}' --installer_docker_compose='${var.installer_docker_compose}' --sw_repo_image='${var.sw_repo_image}' --pm_image='${var.pm_image}' --template_debug='${var.template_debug}' --portable_private_ip='${var.portable_private_ip}' --byochef='${var.byochef}' --offline_installation='${var.offline_installation}' --install_cookbooks='${var.install_cookbooks}'\""
-      ]
+      "chmod 775 ./advanced-content-runtime/launch-docker-compose.sh",
+      "chmod 775 ./advanced-content-runtime/image-upgrade.sh",
+      "bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='${var.docker_registry_token}' --nfs_mount_point='${var.nfs_mount}' --encryption_passphrase='${var.encryption_passphrase}' --software_repo_user='${var.ibm_sw_repo_user}' --software_repo_pass='${var.ibm_sw_repo_password}' --im_repo_user='${var.ibm_im_repo_user_hidden}' --im_repo_pass='${var.ibm_im_repo_password_hidden}'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='${var.ibm_sw_repo_port}' --software_repo_secure_port='${var.ibm_sw_repo_secure_port}' --pattern_mgr=pattern --ibm_contenthub_git_host='${var.ibm_contenthub_git_host}' --ibm_contenthub_git_organization='${var.ibm_contenthub_git_organization}' --ibm_openhub_git_organization='${var.ibm_openhub_git_organization}' --chef_org='${var.chef_org}' --chef_admin='${var.chef_admin}' --chef_fqdn='${var.chef_fqdn}' --chef_ip='${var.chef_ip}' --chef_pem='${var.chef_pem}' --docker_registry='${var.docker_registry}' --chef_version=${var.chef_version} --chef_client_version='${var.chef_client_version}' --chef_client_path='${var.chef_client_path}' --ibm_pm_access_token='${var.ibm_pm_access_token}' --ibm_pm_admin_token='${var.ibm_pm_admin_token}' --camc-sw-repo_version='${var.docker_registry_camc_sw_repo_version}' --docker_ee_repo='${var.docker_ee_repo}' --camc-pattern-manager_version='${var.docker_registry_camc_pattern_manager_version}' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='${var.ibm_pm_public_ssh_key_name}' --ibm_pm_private_ssh_key='${var.ibm_pm_private_ssh_key}' --ibm_pm_public_ssh_key='${var.ibm_pm_public_ssh_key}' --user_public_ssh_key='${var.user_public_ssh_key}' --prereq_strictness='${var.prereq_strictness}' --ip_address='${var.ipv4_address}' --template_timestamp='${var.template_timestamp_hidden}' --installer_docker='${var.installer_docker}' --installer_docker_compose='${var.installer_docker_compose}' --sw_repo_image='${var.sw_repo_image}' --pm_image='${var.pm_image}' --template_debug='${var.template_debug}' --portable_private_ip='${var.portable_private_ip}' --byochef='${var.byochef}' --offline_installation='${var.offline_installation}' --install_cookbooks='${var.install_cookbooks}' --http_proxy_host='${var.http_proxy_host}' --http_proxy_port='${var.http_proxy_port}' --http_proxy_user='${var.http_proxy_user}' --http_proxy_password='${var.http_proxy_password}'\"",
+    ]
   }
 } # End of null_resource
 
-
 ### VMware output variables
-  output "ip_address" {
-  value = "${vsphere_virtual_machine.singlenode.clone.0.customize.0.network_interface.0.ipv4_address}" }
-  output "ibm_sw_repo" {
-  value = "https://${var.ipv4_address}:${var.ibm_sw_repo_secure_port}" }
-  output "ibm_im_repo" {
-  value = "https://${var.ipv4_address}:${var.ibm_sw_repo_secure_port}/IMRepo" }
-  output "ibm_pm_service" {
-  value = "https://${var.ipv4_address}:5443" }
-  output "ibm_im_repo_user" {
-  value = "${var.ibm_sw_repo_user}" }
-  output "ibm_im_repo_password" {
-  value = "${var.ibm_sw_repo_password}" }
-  output "template_timestamp" {
-  value = "2018-06-13 19:03:14" }
+output "ip_address" {
+  value = "${vsphere_virtual_machine.singlenode.clone.0.customize.0.network_interface.0.ipv4_address}"
+}
+
+output "ibm_sw_repo" {
+  value = "https://${var.ipv4_address}:${var.ibm_sw_repo_secure_port}"
+}
+
+output "ibm_im_repo" {
+  value = "https://${var.ipv4_address}:${var.ibm_sw_repo_secure_port}/IMRepo"
+}
+
+output "ibm_pm_service" {
+  value = "https://${var.ipv4_address}:5443"
+}
+
+output "ibm_im_repo_user" {
+  value = "${var.ibm_sw_repo_user}"
+}
+
+output "ibm_im_repo_password" {
+  value = "${var.ibm_sw_repo_password}"
+}
+
+output "template_timestamp" {
+  value = "2018-06-13 19:03:14"
+}
+
 ### End VMware output variables
 
-output "docker_registry_token" { value = "${var.docker_registry_token}"}
-output "docker_registry" { value = "${var.docker_registry}"}
-output "docker_registry_camc_pattern_manager_version" { value = "${var.docker_registry_camc_pattern_manager_version}"}
-output "docker_registry_camc_sw_repo_version" { value = "${var.docker_registry_camc_sw_repo_version}"}
-output "ibm_sw_repo_user" { value = "${var.ibm_sw_repo_user}"}
-output "ibm_sw_repo_password" { value = "${var.ibm_sw_repo_password}"}
-output "ibm_sw_repo_port" { value = "${var.ibm_sw_repo_port}"}
-output "ibm_sw_repo_secure_port" { value = "${var.ibm_sw_repo_secure_port}"}
-output "chef_client_version" { value = "${var.chef_client_version}"}
-output "chef_client_path" { value = "${var.chef_client_path}"}
-output "ibm_im_repo_user_hidden" { value = "${var.ibm_im_repo_user_hidden}"}
-output "ibm_im_repo_password_hidden" { value = "${var.ibm_im_repo_password_hidden}"}
-output "ibm_contenthub_git_host" { value = "${var.ibm_contenthub_git_host}"}
-output "ibm_contenthub_git_organization" { value = "${var.ibm_contenthub_git_organization}"}
-output "ibm_openhub_git_organization" { value = "${var.ibm_openhub_git_organization}"}
-output "offline_installation" { value = "${var.offline_installation}"}
-output "docker_ee_repo" { value = "${var.docker_ee_repo}"}
-output "chef_org" { value = "${var.chef_org}"}
-output "chef_admin" { value = "${var.chef_admin}"}
-output "byochef" { value = "${var.byochef}"}
-output "install_cookbooks" { value = "${var.install_cookbooks}"}
-output "chef_fqdn" { value = "${var.chef_fqdn}"}
-output "chef_ip" { value = "${var.chef_ip}"}
-output "chef_pem" { value = "${var.chef_pem}"}
-output "ibm_pm_access_token" { value = "${var.ibm_pm_access_token}"}
-output "ibm_pm_admin_token" { value = "${var.ibm_pm_admin_token}"}
-output "ibm_pm_public_ssh_key_name" { value = "${var.ibm_pm_public_ssh_key_name}"}
-output "ibm_pm_private_ssh_key" { value = "${var.ibm_pm_private_ssh_key}"}
-output "ibm_pm_public_ssh_key" { value = "${var.ibm_pm_public_ssh_key}"}
-output "user_public_ssh_key" { value = "${var.user_public_ssh_key}"}
-output "template_timestamp_hidden" { value = "${var.template_timestamp_hidden}"}
-output "template_debug" { value = "${var.template_debug}"}
-output "runtime_hostname" { value = "${var.runtime_hostname}"}
-output "vsphere_datacenter" { value = "${var.vsphere_datacenter}"}
-output "vsphere_folder" { value = "${var.vsphere_folder}"}
-output "vsphere_datastore" { value = "${var.vsphere_datastore}"}
-output "vsphere_default_resource_pool" { value = "${var.vsphere_default_resource_pool}"}
-output "runtime_keep_on_remove" { value = "${var.runtime_keep_on_remove}"}
-output "vsphere_adapter_type" { value = "${var.vsphere_adapter_type}"}
-output "runtime_domain" { value = "${var.runtime_domain}"}
-output "cores" { value = "${var.cores}"}
-output "memory" { value = "${var.memory}"}
-output "nfs_mount" { value = "${var.nfs_mount}"}
-output "vsphere_dns" { value = "${var.vsphere_dns}"}
-output "vsphere_dns_suffix_list" { value = "${var.vsphere_dns_suffix_list}"}
-output "disk1_template" { value = "${var.disk1_template}"}
-output "disk1_size" { value = "${var.disk1_size}"}
-output "disk2_name" { value = "${var.disk2_name}"}
-output "disk2_size" { value = "${var.disk2_size}"}
-output "network_label" { value = "${var.network_label}"}
-output "ipv4_address" { value = "${var.ipv4_address}"}
-output "ipv4_gateway" { value = "${var.ipv4_gateway}"}
-output "ipv4_netmask" { value = "${var.ipv4_netmask}"}
-output "vmware_image_ssh_user" { value = "${var.vmware_image_ssh_user}"}
-output "vmware_image_ssh_password" { value = "${var.vmware_image_ssh_password}"}
-output "vmware_image_ssh_private_key" { value = "${var.vmware_image_ssh_private_key}"}
-output "network_visibility" { value = "${var.network_visibility}"}
-output "prereq_strictness" { value = "${var.prereq_strictness}"}
-output "portable_private_ip" { value = "${var.portable_private_ip}"}
-output "encryption_passphrase" { value = "${var.encryption_passphrase}"}
-output "installer_docker" { value = "${var.installer_docker}"}
-output "installer_docker_compose" { value = "${var.installer_docker_compose}"}
-output "sw_repo_image" { value = "${var.sw_repo_image}"}
-output "pm_image" { value = "${var.pm_image}"}
-output "chef_version" { value = "${var.chef_version}"}
+output "docker_registry_token" {
+  value = "${var.docker_registry_token}"
+}
+
+output "docker_registry" {
+  value = "${var.docker_registry}"
+}
+
+output "docker_registry_camc_pattern_manager_version" {
+  value = "${var.docker_registry_camc_pattern_manager_version}"
+}
+
+output "docker_registry_camc_sw_repo_version" {
+  value = "${var.docker_registry_camc_sw_repo_version}"
+}
+
+output "ibm_sw_repo_user" {
+  value = "${var.ibm_sw_repo_user}"
+}
+
+output "ibm_sw_repo_password" {
+  value = "${var.ibm_sw_repo_password}"
+}
+
+output "ibm_sw_repo_port" {
+  value = "${var.ibm_sw_repo_port}"
+}
+
+output "ibm_sw_repo_secure_port" {
+  value = "${var.ibm_sw_repo_secure_port}"
+}
+
+output "chef_client_version" {
+  value = "${var.chef_client_version}"
+}
+
+output "chef_client_path" {
+  value = "${var.chef_client_path}"
+}
+
+output "ibm_im_repo_user_hidden" {
+  value = "${var.ibm_im_repo_user_hidden}"
+}
+
+output "ibm_im_repo_password_hidden" {
+  value = "${var.ibm_im_repo_password_hidden}"
+}
+
+output "ibm_contenthub_git_host" {
+  value = "${var.ibm_contenthub_git_host}"
+}
+
+output "ibm_contenthub_git_organization" {
+  value = "${var.ibm_contenthub_git_organization}"
+}
+
+output "ibm_openhub_git_organization" {
+  value = "${var.ibm_openhub_git_organization}"
+}
+
+output "offline_installation" {
+  value = "${var.offline_installation}"
+}
+
+output "docker_ee_repo" {
+  value = "${var.docker_ee_repo}"
+}
+
+output "chef_org" {
+  value = "${var.chef_org}"
+}
+
+output "chef_admin" {
+  value = "${var.chef_admin}"
+}
+
+output "byochef" {
+  value = "${var.byochef}"
+}
+
+output "install_cookbooks" {
+  value = "${var.install_cookbooks}"
+}
+
+output "chef_fqdn" {
+  value = "${var.chef_fqdn}"
+}
+
+output "chef_ip" {
+  value = "${var.chef_ip}"
+}
+
+output "chef_pem" {
+  value = "${var.chef_pem}"
+}
+
+output "ibm_pm_access_token" {
+  value = "${var.ibm_pm_access_token}"
+}
+
+output "ibm_pm_admin_token" {
+  value = "${var.ibm_pm_admin_token}"
+}
+
+output "ibm_pm_public_ssh_key_name" {
+  value = "${var.ibm_pm_public_ssh_key_name}"
+}
+
+output "ibm_pm_private_ssh_key" {
+  value = "${var.ibm_pm_private_ssh_key}"
+}
+
+output "ibm_pm_public_ssh_key" {
+  value = "${var.ibm_pm_public_ssh_key}"
+}
+
+output "user_public_ssh_key" {
+  value = "${var.user_public_ssh_key}"
+}
+
+output "template_timestamp_hidden" {
+  value = "${var.template_timestamp_hidden}"
+}
+
+output "template_debug" {
+  value = "${var.template_debug}"
+}
+
+output "runtime_hostname" {
+  value = "${var.runtime_hostname}"
+}
+
+output "vsphere_datacenter" {
+  value = "${var.vsphere_datacenter}"
+}
+
+output "vsphere_folder" {
+  value = "${var.vsphere_folder}"
+}
+
+output "vsphere_datastore" {
+  value = "${var.vsphere_datastore}"
+}
+
+output "vsphere_default_resource_pool" {
+  value = "${var.vsphere_default_resource_pool}"
+}
+
+output "runtime_keep_on_remove" {
+  value = "${var.runtime_keep_on_remove}"
+}
+
+output "vsphere_adapter_type" {
+  value = "${var.vsphere_adapter_type}"
+}
+
+output "runtime_domain" {
+  value = "${var.runtime_domain}"
+}
+
+output "cores" {
+  value = "${var.cores}"
+}
+
+output "memory" {
+  value = "${var.memory}"
+}
+
+output "nfs_mount" {
+  value = "${var.nfs_mount}"
+}
+
+output "vsphere_dns" {
+  value = "${var.vsphere_dns}"
+}
+
+output "vsphere_dns_suffix_list" {
+  value = "${var.vsphere_dns_suffix_list}"
+}
+
+output "disk1_template" {
+  value = "${var.disk1_template}"
+}
+
+output "disk1_size" {
+  value = "${var.disk1_size}"
+}
+
+output "disk2_name" {
+  value = "${var.disk2_name}"
+}
+
+output "disk2_size" {
+  value = "${var.disk2_size}"
+}
+
+output "network_label" {
+  value = "${var.network_label}"
+}
+
+output "ipv4_address" {
+  value = "${var.ipv4_address}"
+}
+
+output "ipv4_gateway" {
+  value = "${var.ipv4_gateway}"
+}
+
+output "ipv4_netmask" {
+  value = "${var.ipv4_netmask}"
+}
+
+output "vmware_image_ssh_user" {
+  value = "${var.vmware_image_ssh_user}"
+}
+
+output "vmware_image_ssh_password" {
+  value = "${var.vmware_image_ssh_password}"
+}
+
+output "vmware_image_ssh_private_key" {
+  value = "${var.vmware_image_ssh_private_key}"
+}
+
+output "network_visibility" {
+  value = "${var.network_visibility}"
+}
+
+output "prereq_strictness" {
+  value = "${var.prereq_strictness}"
+}
+
+output "portable_private_ip" {
+  value = "${var.portable_private_ip}"
+}
+
+output "encryption_passphrase" {
+  value = "${var.encryption_passphrase}"
+}
+
+output "installer_docker" {
+  value = "${var.installer_docker}"
+}
+
+output "installer_docker_compose" {
+  value = "${var.installer_docker_compose}"
+}
+
+output "sw_repo_image" {
+  value = "${var.sw_repo_image}"
+}
+
+output "pm_image" {
+  value = "${var.pm_image}"
+}
+
+output "chef_version" {
+  value = "${var.chef_version}"
+}
