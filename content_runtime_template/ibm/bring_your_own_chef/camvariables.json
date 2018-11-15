@@ -551,7 +551,8 @@
       "system": false,
       "required": true,
       "immutable": false,
-      "regex": "^[a-z0-9.-]{1,80}$"
+      "regex": "(?=^.*[a-zA-Z].*$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9])$)",
+      "regexdesc": "Must be alphanumeric string with atleast one alphabetic character and only allowable special character is the dash ('-'), and must be between 1-63 characters in length."
     },
     {
       "name": "runtime_domain",
@@ -564,7 +565,9 @@
       "secured": false,
       "system": false,
       "required": true,
-      "immutable": false
+      "immutable": false,
+      "regex": "(^(((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\\.){1,})((?=.*[a-zA-Z].*)[a-zA-Z0-9]{2,24})$)",
+      "regexdesc": "Must be alphanumeric string that may be separated by periods ('.'). The only other allowable special character is the dash ('-'). However the special characters '.' and '-' may not be consecutive. Must begin and end with an alphanumeric character and must be between 1-63 characters in length. The last label, the TLD (top level domain) must be between 2-24 alphabetic characters. The TLD label cannot be solely comprised of digits. Must consist of least one label followed by a period '.' then ending with the TLD label."
     },
     {
       "name": "cam_public_key",

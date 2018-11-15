@@ -766,8 +766,22 @@ function download_chef_client() {
   fi
 }
 
+#Installs latest if overylay compat kernel otherwise 18.06
+#which is the last version that supports devicemapper.
+function install_edge_docker(){
+	KERNEL_OVERLAY_COMPAT=$(is_kernel_overlay_compat)
+	if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
+		echo "Install latest docker ce."
+    curl -fsSL https://get.docker.com/ | sudo sh
+  else
+  	echo "Install docker ce 18.06."
+  	curl -fsSL https://get.docker.com/ | sudo VERSION=18.06 sh
+	fi	
+}
+
 function install_docker() {
   # Install
+  KERNEL_OVERLAY_COMPAT=$(is_kernel_overlay_compat)
   if [[ -n $PARAM_DOCKER ]]; then
     install_binary "docker" $PARAM_DOCKER
   else
@@ -780,7 +794,13 @@ function install_docker() {
         fi
         sudo apt-get -y install apt-transport-https ca-certificates software-properties-common
         curl -fsSL $DOCKER_EE_REPO/ubuntu/gpg | sudo apt-key add -
-        sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-17.03"
+        if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
+        	echo "Install docker ee 18.09."
+        	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-18.09"
+        else
+        	echo "Install docker ee 17.03."
+        	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-17.03"
+        fi
         sudo apt-get -y update
         sudo apt-get -y install docker-ee
       else
@@ -790,6 +810,10 @@ function install_docker() {
           sudo sh -c 'echo "'$MAIN_VERSION'" > /etc/yum/vars/dockerosversion'
           sudo yum install -y yum-utils device-mapper-persistent-data lvm2
           sudo yum-config-manager --add-repo $DOCKER_EE_REPO/rhel/docker-ee.repo
+          if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
+          	echo "Install docker ee 18.09."
+          	sudo yum-config-manager --enable docker-ee-stable-18.09
+          fi
           # Install Docker EE
           sudo yum makecache fast
           if [[ $CLOUD_PROVIDER = *"amazon"* ]]; then
@@ -811,10 +835,10 @@ function install_docker() {
     else # Otherwise install CE in supported platforms or install from provided binary
       if [[ $PLATFORM == *"ubuntu"* ]] || [[ $PLATFORM == *"centos"* ]]; then
           [[ $PLATFORM == *"ubuntu"* ]] && wait_apt_lock
-          curl -fsSL https://get.docker.com/ | sudo sh
+          install_edge_docker
           if [ -z "`which docker`" ]; then # retry failed install, could be download issues
               [[ $PLATFORM == *"ubuntu"* ]] && wait_apt_lock
-              curl -fsSL https://get.docker.com/ | sudo sh
+              install_edge_docker
           fi
       fi
       if [ $? -ne "0" ]; then
@@ -1357,11 +1381,84 @@ function get_platform_version() {
       PLATFORM_VERSION=`python3 -c "import platform;print(platform.platform())" | rev | cut -d '-' -f2 | rev`
     fi
   fi
-  if [[ -z PLATFORM_VERSION ]]; then
+  if [[ -z $PLATFORM_VERSION ]]; then
     echo "ERROR"
   else
     echo $PLATFORM_VERSION
   fi
+}
+
+#True if kernel supports overlayfs.
+#OverlayFS is supported on Kernel 4 and above. On RHEL from 3.10.0-693. 
+function is_kernel_overlay_compat(){
+	KERNEL=`uname -r | cut -d'.' -f1`
+	if [ "$KERNEL" -lt 4 ]; then
+		if [ "$KERNEL" -lt 3 ]; then
+			#0.x, 1.x, 2.x
+			echo 'false'
+			return
+		else
+			#KERNEL 3
+			MAJOR=`uname -r | cut -d'.' -f2`
+			if [ "$MAJOR" -lt 10 ]; then
+				#3.x (0 to 9)
+				echo 'false'
+				return
+			elif [ "$MAJOR" -eq 10 ]; then
+				#3.10.x
+				MINOR=`uname -r | cut -d'.' -f3 | cut -d'-' -f1`
+				if [ "$MINOR" -eq 0 ]; then
+					#3.10.0
+    			BUGPATCH=`uname -r | tr - . | cut -d'.' -f4`
+    			if [ "$BUGPATCH" -lt 693 ]; then
+          	echo 'false'
+          	return
+    			else
+    				#3.10.693 and above
+        		echo 'true'
+        		return
+    			fi
+    		else
+    			#3.10.1 and above
+    			echo 'true'
+    			return
+    		fi
+    	else
+    		#3.11.x
+    		echo 'true'
+    		return
+    	fi
+    fi
+	else
+		#4.x and above
+  	echo 'true'
+  	return
+	fi	
+}
+
+#True if docker engine supports devicemapper. devicemapper is deprecated in docker 18.09.
+function is_devicemapper_supported(){
+	ENCRYPTION_PASSPHRASE=""
+	if [[ $# -eq 1 ]]; then
+		ENCRYPTION_PASSPHRASE=$1
+	fi	
+	#Check version if not found restart docker daemon.
+	VERSION_TEST=`sudo docker version --format '{{.Server.Version}}' 2>/dev/null`
+	RC=$?
+	if [[ $RC -eq 1 ]]; then
+		[[ `which systemctl` ]] && { echo -n "$ENCRYPTION_PASSPHRASE" | sudo systemctl start docker || true ; } || { echo -n "$ENCRYPTION_PASSPHRASE" | sudo service docker start || true ; }
+	fi
+	major=`sudo docker version --format '{{.Server.Version}}' | cut -d'-' -f1 | cut -d'.' -f1`
+	minor=`sudo docker version --format '{{.Server.Version}}' | cut -d'-' -f1 | cut -d'.' -f2 | sed 's/^0*//'`
+	if [ "$major" -lt 18 ]; then
+		echo 'true'
+	else
+		if [ "$minor" -lt 9 ]; then
+			echo 'true'
+		else
+			echo 'false'
+		fi
+	fi
 }
 EndOfFile
 
@@ -1902,20 +1999,44 @@ function docker_disk()
 {
   DISK_NAME=$(find_disk 1) # find the largest disk for formatting
   sudo mkdir -p /etc/docker/
-  # Ubuntu 14.04 fails to mount the disk because of a downlevel API, do not process the disk if present
-  if [[ ! -z "$DISK_NAME" ]] && [[ `sudo lvcreate --help | egrep wipesignatures` ]] ; then
-     echo "Obtained disk name: $DISK_NAME"
-     ONE=1
-     DOCKER_DISK_NAME=$DISK_NAME$ONE
-     (echo n; echo p; echo " "; echo " "; echo " "; echo t; echo 8e; echo w;) | sudo fdisk $DISK_NAME
-     sudo pvcreate $DOCKER_DISK_NAME
-     echo -e "{ \n\"storage-driver\": \"devicemapper\",\n\t\"storage-opts\": [\n\t\"dm.directlvm_device=$DOCKER_DISK_NAME\",\n\t\"dm.directlvm_device_force=true\"\n\t] \n}" | sudo tee /etc/docker/daemon.json
-     sudo mkdir -p /etc/lvm/profile/
-     echo -e "activation{\nthin_pool_autoextend_threshold=80\nthin_pool_autoextend_percent=20\n}\n" | sudo tee /etc/lvm/profile/docker-thinpool.profile
-     sudo mv /var/lib/docker /var/lib/docker.origin || true
+  DEVICEMAPPER_SUPPORTED=$1
+  if [[ $DEVICEMAPPER_SUPPORTED == "true" ]]; then
+    echo "Use storage driver devicemapper."
+	  # Ubuntu 14.04 fails to mount the disk because of a downlevel API, do not process the disk if present
+	  if [[ ! -z "$DISK_NAME" ]] && [[ `sudo lvcreate --help | egrep wipesignatures` ]] ; then
+	     echo "Obtained disk name: $DISK_NAME"
+	     ONE=1
+	     DOCKER_DISK_NAME=$DISK_NAME$ONE
+	     (echo n; echo p; echo " "; echo " "; echo " "; echo t; echo 8e; echo w;) | sudo fdisk $DISK_NAME
+	     sudo pvcreate $DOCKER_DISK_NAME
+	     echo -e "{ \n\"storage-driver\": \"devicemapper\",\n\t\"storage-opts\": [\n\t\"dm.directlvm_device=$DOCKER_DISK_NAME\",\n\t\"dm.directlvm_device_force=true\"\n\t] \n}" | sudo tee /etc/docker/daemon.json
+	     sudo mkdir -p /etc/lvm/profile/
+	     echo -e "activation{\nthin_pool_autoextend_threshold=80\nthin_pool_autoextend_percent=20\n}\n" | sudo tee /etc/lvm/profile/docker-thinpool.profile
+	     sudo mv /var/lib/docker /var/lib/docker.origin || true
+	  else  	
+	     echo -e "{\n\"storage-driver\": \"devicemapper\"\n}" | sudo tee /etc/docker/daemon.json
+	  fi
   else
-     echo -e "{\n\"storage-driver\": \"devicemapper\"\n}" | sudo tee /etc/docker/daemon.json
-  fi
+    echo "Use storage driver overlay2."
+	  if [[ ! -z "$DISK_NAME" ]] ; then
+	  	 sudo cp -au /var/lib/docker /var/lib/docker.bk
+	     echo "Obtained disk name: $DISK_NAME"
+	     DOCKER_MOUNT_POINT='/var/lib/docker'
+	     ONE=1
+	     DOCKER_DISK_NAME=$DISK_NAME$ONE
+	     (echo n; echo p; echo " "; echo " "; echo " "; echo t; echo 8e; echo w;) | sudo fdisk $DISK_NAME
+	     sudo mkfs.ext4 $DOCKER_DISK_NAME
+	     echo $DOCKER_DISK_NAME  $DOCKER_MOUNT_POINT   ext4    defaults    0 0 | sudo tee -a $FSTAB_FILE
+	     sudo mount $DOCKER_DISK_NAME  $DOCKER_MOUNT_POINT
+	  fi
+	  KERNEL_VERSION=`uname -r | cut -d'.' -f1`
+	  PLATFORM=$(get_platform)	  
+	  if [[ $KERNEL_VERSION -lt 4 ]] && [[ $PLATFORM == *"redhat"* ]]; then  	
+	     echo -e "{\n\"storage-driver\": \"overlay2\",\n\"storage-opts\": [\"overlay2.override_kernel_check=true\"]\n}" | sudo tee /etc/docker/daemon.json
+	  else
+         echo -e "{\n\"storage-driver\": \"overlay2\"\n}" | sudo tee /etc/docker/daemon.json	  	
+	  fi
+  fi	   		    	  
 }
 
 function begin_message() {
@@ -2121,32 +2242,32 @@ else
   #Change visudo to carry over proxy env variables.
   ###  
   begin_message "Set sudoers file for proxy env variables"
-  touch /etc/sudoers.tmp
-  cp /etc/sudoers /tmp/sudoers.mod
-  echo 'Defaults env_keep += "http_proxy https_proxy no_proxy"' >> /tmp/sudoers.mod
+  sudo touch /etc/sudoers.tmp
+  sudo cp /etc/sudoers /tmp/sudoers.mod
+  sudo sh -c 'echo "Defaults env_keep += \"http_proxy https_proxy no_proxy\"" >> /tmp/sudoers.mod'
   sudo visudo -c -f /tmp/sudoers.mod
   if [ "$?" -eq "0" ]; then
     sudo mv /tmp/sudoers.mod /etc/sudoers
   fi
-  rm /etc/sudoers.tmp  
+  sudo rm /etc/sudoers.tmp  
   
   ###
   #Manipulate input to required format
   ###  
-  HTTP_PROXY_URL=HTTP_PROXY_HOST
+  HTTP_PROXY_URL=$HTTP_PROXY_HOST
   PROTOCOL="$(echo $HTTP_PROXY_HOST |  grep :// | sed -e 's/^\(.*:\/\/\).*/\1/g')"	
   HTTP_PROXY_HOST=`echo $${HTTP_PROXY_HOST/$PROTOCOL/}`
 
   begin_message "Set http proxy environment variables"  
   HTTP_PROXY_VAR=$PROTOCOL
   HTTPS_PROXY_VAR=$PROTOCOL
-  if [[ -n "HTTP_PROXY_USER" && -n "HTTP_PROXY_PASSWORD" ]]; then
+  if [[ -n "$HTTP_PROXY_USER" && -n "$HTTP_PROXY_PASSWORD" ]]; then
     HTTP_PROXY_VAR="$HTTP_PROXY_VAR$HTTP_PROXY_USER:$HTTP_PROXY_PASSWORD@"
     HTTPS_PROXY_VAR="$HTTPS_PROXY_VAR$HTTP_PROXY_USER:$HTTP_PROXY_PASSWORD@"
   fi
   HTTP_PROXY_VAR="$HTTP_PROXY_VAR$HTTP_PROXY_HOST"
   HTTPS_PROXY_VAR="$HTTPS_PROXY_VAR$HTTP_PROXY_HOST"
-  if [[ -n "HTTP_PROXY_PORT"  ]]; then
+  if [[ -n "$HTTP_PROXY_PORT"  ]]; then
     HTTP_PROXY_VAR="$HTTP_PROXY_VAR:$HTTP_PROXY_PORT"
     HTTPS_PROXY_VAR="$HTTPS_PROXY_VAR:$HTTP_PROXY_PORT"
   fi
@@ -2157,24 +2278,24 @@ else
   export https_proxy=$HTTPS_PROXY_VAR
   NO_PROXY="127.0.0.1,localhost"
   export no_proxy=$NO_PROXY
-  echo "export http_proxy=$HTTP_PROXY_VAR" >> /etc/profile.d/proxy-env-var.sh
-  echo "export https_proxy=$HTTPS_PROXY_VAR" >> /etc/profile.d/proxy-env-var.sh
-  echo "export no_proxy=$NO_PROXY" >> /etc/profile.d/proxy-env-var.sh
+  echo "export http_proxy=$HTTP_PROXY_VAR" | sudo tee --append /etc/profile.d/proxy-env-var.sh
+  echo "export https_proxy=$HTTPS_PROXY_VAR" | sudo tee --append /etc/profile.d/proxy-env-var.sh
+  echo "export no_proxy=$NO_PROXY" | sudo tee --append /etc/profile.d/proxy-env-var.sh  
   ###
   #Set apt and yum
   ###    
   if [[ $PLATFORM == *"ubuntu"* ]]; then    
-    echo Acquire::http::Proxy \"$${HTTP_PROXY_VAR}/\"\; >> /etc/apt/apt.conf
-    echo Acquire::https::Proxy \"$${HTTPS_PROXY_VAR}/\"\; >> /etc/apt/apt.conf
+    echo "Acquire::http::Proxy \"$${HTTP_PROXY_VAR}/\";" | sudo tee --append /etc/apt/apt.conf
+    echo "Acquire::https::Proxy \"$${HTTPS_PROXY_VAR}/\";" | sudo tee --append /etc/apt/apt.conf
   else  
     RHEL_HTTP_PROXY_VAR="proxy=$PROTOCOL$HTTP_PROXY_HOST"
-    if [[ -n "HTTP_PROXY_PORT"  ]]; then
+    if [[ -n "$HTTP_PROXY_PORT"  ]]; then
       RHEL_HTTP_PROXY_VAR="$RHEL_HTTP_PROXY_VAR:$HTTP_PROXY_PORT"
       #RHEL_HTTPS_PROXY_VAR="$RHEL_HTTPS_PROXY_VAR:$HTTP_PROXY_PORT"
     fi
     RHEL_HTTP_PROXY_PASSWORD="proxy_password=$HTTP_PROXY_PASSWORD"
     RHEL_HTTP_PROXY_USER="proxy_username=$HTTP_PROXY_USER"
-    sed -i "/\[main\]/a $RHEL_HTTP_PROXY_VAR\n$RHEL_HTTP_PROXY_PASSWORD\n$RHEL_HTTP_PROXY_USER" /etc/yum.conf
+    sudo sed -i "/\[main\]/a $RHEL_HTTP_PROXY_VAR\n$RHEL_HTTP_PROXY_PASSWORD\n$RHEL_HTTP_PROXY_USER" /etc/yum.conf
   fi  
 fi
 begin_message "Requirements Checker"
@@ -2225,8 +2346,9 @@ if [[ ! `sudo ls /etc/docker/daemon.json 2>/dev/null` ]]; then
   sudo groupadd docker || echo ""
   sudo usermod -aG docker $USER # even though we have added the user to the group, it will not take effect on this pid/process
   # Check to see if the docker service is running
+  DEVICEMAPPER_SUPPORTED=$(is_devicemapper_supported $ENCRYPTION_PASSPHRASE)
   [[ `which systemctl` ]] && { echo -n "$ENCRYPTION_PASSPHRASE" | sudo systemctl stop docker || true ; } || { echo -n "$ENCRYPTION_PASSPHRASE" | sudo service docker stop || true ; }
-  docker_disk
+  docker_disk $DEVICEMAPPER_SUPPORTED
   [[ `which systemctl` ]] && { echo -n "$ENCRYPTION_PASSPHRASE" | sudo systemctl start docker || true ; } || { echo -n "$ENCRYPTION_PASSPHRASE" | sudo service docker start || true ; }
 fi
 ###
@@ -2240,17 +2362,17 @@ else
     if [ ! -d "/etc/systemd/system/docker.service.d" ]; then
       sudo mkdir -p /etc/systemd/system/docker.service.d
     fi  
-    sudo echo "[Service]" > /etc/systemd/system/docker.service.d/http-proxy.conf 
-    sudo echo "Environment=\"HTTP_PROXY=$HTTP_PROXY_VAR/\" \"NO_PROXY=$NO_PROXY\"" >> /etc/systemd/system/docker.service.d/http-proxy.conf 
-    sudo echo "[Service]" > /etc/systemd/system/docker.service.d/https-proxy.conf 
-    sudo echo "Environment=\"HTTPS_PROXY=$HTTP_PROXY_VAR/\" \"NO_PROXY=$NO_PROXY\"" >> /etc/systemd/system/docker.service.d/https-proxy.conf  
+    echo '[Service]' | sudo tee --append /etc/systemd/system/docker.service.d/http-proxy.conf
+    echo "Environment=\"HTTP_PROXY=$HTTP_PROXY_VAR/\" \"NO_PROXY=$NO_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/http-proxy.conf    
+    echo '[Service]' | sudo tee --append /etc/systemd/system/docker.service.d/https-proxy.conf    
+    echo "Environment=\"HTTPS_PROXY=$HTTP_PROXY_VAR/\" \"NO_PROXY=$NO_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/https-proxy.conf    
     sudo systemctl daemon-reload
     echo -n "$ENCRYPTION_PASSPHRASE" | sudo systemctl restart docker
     #sudo systemctl show --property=Environment docker 
   else    
-    sudo echo "export http_proxy=\"$HTTP_PROXY_VAR/\"" >> /etc/default/docker
-    sudo echo "export https_proxy=\"$HTTPS_PROXY_VAR/\"" >> /etc/default/docker
-    sudo echo "export no_proxy=\"$NO_PROXY\"" >> /etc/default/docker
+    echo "export http_proxy=\"$HTTP_PROXY_VAR/\""  | sudo tee --append /etc/default/docker
+    echo "export https_proxy=\"$HTTPS_PROXY_VAR/\""  | sudo tee --append /etc/default/docker    
+    echo "export no_proxy=\"$NO_PROXY\""  | sudo tee --append /etc/default/docker    
     echo -n "$ENCRYPTION_PASSPHRASE" | sudo service docker restart
   fi
 fi
@@ -2296,8 +2418,8 @@ if [[ ! -z "$HTTP_PROXY_HOST" ]]; then
     NO_PROXY="$${NO_PROXY},$${CHEF_HOST_FQDN}"
   fi
   echo "export no_proxy=$NO_PROXY"
-  sed -i '/export no_proxy=/d' /etc/profile.d/proxy-env-var.sh
-  echo "export no_proxy=$NO_PROXY" >>/etc/profile.d/proxy-env-var.sh
+  sudo sed -i '/export no_proxy=/d' /etc/profile.d/proxy-env-var.sh
+  echo "export no_proxy=$NO_PROXY" | sudo tee --append /etc/profile.d/proxy-env-var.sh
 else
 	begin_message "Http proxy empty. Do not configure no proxy variable."
 fi
@@ -2419,9 +2541,12 @@ if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_K
 
     if [ "$EXISTING_PORT" != "$SOFTWARE_REPO_PORT" ] && [ -e "$CONFIG_FILE" ]; then
         TMP_FILE=`mktemp`
+        ENCODED_TMP_FILE=`mktemp`
         base64 --decode $CONFIG_FILE > $TMP_FILE
         sed -i 's/\"$EXISTING_PORT\",/\"$SOFTWARE_REPO_PORT\",/' $TMP_FILE
-        base64 $TMP_FILE > $CONFIG_FILE
+        base64 $TMP_FILE > $ENCODED_TMP_FILE
+        sudo cp $ENCODED_TMP_FILE $CONFIG_FILE
+        sudo rm $TMP_FILE $ENCODED_TMP_FILE
     fi
 
     #Create the Private/Public Keys for Pattern-Manager
@@ -2435,7 +2560,7 @@ if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_K
     sudo python $runtimepath/crtconfig.py $PATTERN_MGR_ACCESS_TOKEN $PATTERN_MGR_ADMIN_TOKEN -c=encoded $CONFIG_PATH/cam_runtime_key_`hostname` $CHEF_PEM_LOC $CHEF_HOST_FQDN $CHEF_ORG $CHEF_IPADDR $CHEF_ADMIN $SOFTWARE_REPO_IP $SOFTWARE_REPO_PORT $CONFIG_PATH/config.json $CHEF_CLIENT_VERSION -ph $HTTP_PROXY_URL -ppr $HTTP_PROXY_PORT -pu $HTTP_PROXY_USER -pp "$HTTP_PROXY_PASSWORD"
 
     # Backup the generated config file
-    cp $CONFIG_FILE $parmdir
+    sudo cp $CONFIG_FILE $parmdir
 
     #Changing created files' permissions
     sudo chmod 755 $CONFIG_PATH/cam_runtime_key_`hostname` $CONFIG_PATH/config.json
