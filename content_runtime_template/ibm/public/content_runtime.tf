@@ -3,257 +3,64 @@
 # @ Copyright IBM Corporation 2016, 2017 All Rights Reserved
 # US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
-variable "docker_registry_token" {
-  type = "string"
-}
 
-variable "docker_registry" {
-  type = "string"
-}
-
-variable "docker_registry_camc_pattern_manager_version" {
-  type = "string"
-}
-
-variable "docker_registry_camc_sw_repo_version" {
-  type = "string"
-}
-
-variable "ibm_sw_repo_user" {
-  type = "string"
-}
-
-variable "ibm_sw_repo_password" {
-  type = "string"
-}
-
-variable "ibm_sw_repo_port" {
-  type = "string"
-}
-
-variable "ibm_sw_repo_secure_port" {
-  type = "string"
-}
-
-variable "chef_client_version" {
-  type = "string"
-}
-
-variable "chef_client_path" {
-  type = "string"
-}
-
-variable "ibm_im_repo_user_hidden" {
-  type = "string"
-}
-
-variable "ibm_im_repo_password_hidden" {
-  type = "string"
-}
-
-variable "ibm_contenthub_git_host" {
-  type = "string"
-}
-
-variable "ibm_contenthub_git_organization" {
-  type = "string"
-}
-
-variable "ibm_openhub_git_organization" {
-  type = "string"
-}
-
-variable "offline_installation" {
-  type = "string"
-}
-
-variable "docker_ee_repo" {
-  type = "string"
-}
-
-variable "chef_org" {
-  type = "string"
-}
-
-variable "chef_admin" {
-  type = "string"
-}
-
-variable "byochef" {
-  type = "string"
-}
-
-variable "install_cookbooks" {
-  type = "string"
-}
-
-variable "chef_fqdn" {
-  type = "string"
-}
-
-variable "chef_ip" {
-  type = "string"
-}
-
-variable "chef_pem" {
-  type = "string"
-}
-
-variable "ibm_pm_access_token" {
-  type = "string"
-}
-
-variable "ibm_pm_admin_token" {
-  type = "string"
-}
-
-variable "ibm_pm_public_ssh_key_name" {
-  type = "string"
-}
-
-variable "ibm_pm_private_ssh_key" {
-  type = "string"
-}
-
-variable "ibm_pm_public_ssh_key" {
-  type = "string"
-}
-
-variable "user_public_ssh_key" {
-  type = "string"
-}
-
-variable "template_timestamp_hidden" {
-  type = "string"
-}
-
-variable "template_debug" {
-  type = "string"
-}
-
-variable "runtime_hostname" {
-  type = "string"
-}
-
-variable "runtime_domain" {
-  type = "string"
-}
-
-variable "cam_public_key" {
-  type = "string"
-}
-
-variable "ipv4_address" {
-  type = "string"
-}
-
-variable "portable_private_ip" {
-  type = "string"
-}
-
-variable "encryption_passphrase" {
-  type = "string"
-}
-
-variable "portable_private_ip_netmask" {
-  type = "string"
-}
-
-variable "portable_private_ip_gateway" {
-  type = "string"
-}
-
-variable "ibmcloud_os_image" {
-  type = "string"
-}
-
-variable "nfs_mount" {
-  type = "string"
-}
-
-variable "bluemix_softlayer_datacenter" {
-  type = "string"
-}
-
-variable "private_subnet" {
-  type = "string"
-}
-
-variable "private_vlan_name" {
-  type = "string"
-}
-
-variable "dedicated_acct_host_only" {
-  type = "string"
-}
-
-variable "hourly_billing" {
-  type = "string"
-}
-
-variable "network_speed" {
-  type = "string"
-}
-
-variable "cores" {
-  type = "string"
-}
-
-variable "memory" {
-  type = "string"
-}
-
-variable "network_visibility" {
-  type = "string"
-}
-
-variable "prereq_strictness" {
-  type = "string"
-}
-
-variable "installer_docker" {
-  type = "string"
-}
-
-variable "installer_docker_compose" {
-  type = "string"
-}
-
-variable "sw_repo_image" {
-  type = "string"
-}
-
-variable "pm_image" {
-  type = "string"
-}
-
-variable "chef_version" {
-  type = "string"
-}
-
-variable "bastion_host" {
-  type = "string"
-}
-
-variable "bastion_user" {
-  type = "string"
-}
-
-variable "bastion_private_key" {
-  type = "string"
-}
-
-variable "bastion_port" {
-  type = "string"
-}
-
-variable "bastion_host_key" {
-  type = "string"
-}
-
-variable "bastion_password" {
-  type = "string"
-}
+ variable "docker_registry_token" { type = "string" }
+ variable "docker_registry" { type = "string" }
+ variable "docker_registry_camc_pattern_manager_version" { type = "string" }
+ variable "docker_registry_camc_sw_repo_version" { type = "string" }
+ variable "ibm_sw_repo_user" { type = "string" }
+ variable "ibm_sw_repo_password" { type = "string" }
+ variable "ibm_sw_repo_port" { type = "string" }
+ variable "ibm_sw_repo_secure_port" { type = "string" }
+ variable "chef_client_version" { type = "string" }
+ variable "chef_client_path" { type = "string" }
+ variable "ibm_im_repo_user_hidden" { type = "string" }
+ variable "ibm_im_repo_password_hidden" { type = "string" }
+ variable "ibm_contenthub_git_host" { type = "string" }
+ variable "ibm_contenthub_git_organization" { type = "string" }
+ variable "ibm_openhub_git_organization" { type = "string" }
+ variable "offline_installation" { type = "string" }
+ variable "docker_ee_repo" { type = "string" }
+ variable "chef_org" { type = "string" }
+ variable "chef_admin" { type = "string" }
+ variable "byochef" { type = "string" }
+ variable "install_cookbooks" { type = "string" }
+ variable "chef_fqdn" { type = "string" }
+ variable "chef_ip" { type = "string" }
+ variable "chef_pem" { type = "string" }
+ variable "ibm_pm_access_token" { type = "string" }
+ variable "ibm_pm_admin_token" { type = "string" }
+ variable "ibm_pm_public_ssh_key_name" { type = "string" }
+ variable "ibm_pm_private_ssh_key" { type = "string" }
+ variable "ibm_pm_public_ssh_key" { type = "string" }
+ variable "user_public_ssh_key" { type = "string" }
+ variable "template_timestamp_hidden" { type = "string" }
+ variable "template_debug" { type = "string" }
+ variable "runtime_hostname" { type = "string" }
+ variable "runtime_domain" { type = "string" }
+ variable "cam_public_key" { type = "string" }
+ variable "ipv4_address" { type = "string" }
+ variable "portable_private_ip" { type = "string" }
+ variable "encryption_passphrase" { type = "string" }
+ variable "portable_private_ip_netmask" { type = "string" }
+ variable "portable_private_ip_gateway" { type = "string" }
+ variable "ibmcloud_os_image" { type = "string" }
+ variable "nfs_mount" { type = "string" }
+ variable "bluemix_softlayer_datacenter" { type = "string" }
+ variable "private_subnet" { type = "string" }
+ variable "private_vlan_name" { type = "string" }
+ variable "dedicated_acct_host_only" { type = "string" }
+ variable "hourly_billing" { type = "string" }
+ variable "network_speed" { type = "string" }
+ variable "cores" { type = "string" }
+ variable "memory" { type = "string" }
+ variable "network_visibility" { type = "string" }
+ variable "prereq_strictness" { type = "string" }
+ variable "installer_docker" { type = "string" }
+ variable "installer_docker_compose" { type = "string" }
+ variable "sw_repo_image" { type = "string" }
+ variable "pm_image" { type = "string" }
+ variable "chef_version" { type = "string" }
 
 provider "tls" {
   version = "~> 1.0"
@@ -269,49 +76,42 @@ resource "tls_private_key" "ssh" {
 
 provider "ibm" {
   version = "~> 0.5"
+
 }
 
 resource "ibm_compute_ssh_key" "internal_public_key" {
-  label      = "${var.runtime_hostname}_${var.cam_public_key}"
+  label = "${var.runtime_hostname}_${var.cam_public_key}"
   public_key = "${tls_private_key.ssh.public_key_openssh}"
 }
 
 # Retrieve private VLAN ID
 data "ibm_network_vlan" "private" {
   count = "${length(var.private_vlan_name) > 0 ? 1 : 0 }"
-  name  = "${var.private_vlan_name}"
+  name = "${var.private_vlan_name}"
 }
 
 resource "ibm_compute_vm_instance" "single-node" {
-  hostname                 = "${var.runtime_hostname}"
-  os_reference_code        = "${var.ibmcloud_os_image}"
-  domain                   = "${var.runtime_domain}"
-  datacenter               = "${var.bluemix_softlayer_datacenter}"
-  network_speed            = "${var.network_speed}"
-  hourly_billing           = "${var.hourly_billing}"
-  private_network_only     = "${var.network_visibility == "public" ? "false" : "true"}"
-  private_subnet           = "${var.private_subnet}"
-  private_vlan_id          = "${coalesce(join("", data.ibm_network_vlan.private.*.id), -1)}"
-  cores                    = "${var.cores}"
-  memory                   = "${var.memory}"
-  disks                    = [25, 100]
+  hostname = "${var.runtime_hostname}"
+  os_reference_code = "${var.ibmcloud_os_image}"
+  domain = "${var.runtime_domain}"
+  datacenter = "${var.bluemix_softlayer_datacenter}"
+  network_speed = "${var.network_speed}"
+  hourly_billing = "${var.hourly_billing}"
+  private_network_only = "${var.network_visibility == "public" ? "false" : "true"}"
+  private_subnet = "${var.private_subnet}"
+  private_vlan_id = "${coalesce(join("", data.ibm_network_vlan.private.*.id), -1)}"
+  cores = "${var.cores}"
+  memory = "${var.memory}"
+  disks = [25,100]
   dedicated_acct_host_only = "${var.dedicated_acct_host_only}"
-  local_disk               = false
-
+  local_disk = false
   # Add in the generated public key to authorized hosts file
   ssh_key_ids = ["${ibm_compute_ssh_key.internal_public_key.id}"]
-
   # Set the ssh connection using the private generted ssh key
   connection {
-    type                = "ssh"
-    user                = "root"
-    private_key         = "${tls_private_key.ssh.private_key_pem}"
-    bastion_host        = "${var.bastion_host}"
-    bastion_user        = "${var.bastion_user}"
-    bastion_private_key = "${ length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
-    bastion_port        = "${var.bastion_port}"
-    bastion_host_key    = "${var.bastion_host_key}"
-    bastion_password    = "${var.bastion_password}"
+    type = "ssh"
+    user = "root"
+    private_key = "${tls_private_key.ssh.private_key_pem}"
   }
 
   # Installation script for Portable IP address
@@ -358,20 +158,19 @@ fi
 echo "[SUCCESS] The provided portable IP address has been assigned successfully"
 fi
 EndOfFile
-
-    destination = "/tmp/configure-portable-private-ip.sh"
+  destination = "/tmp/configure-portable-private-ip.sh"
   }
 
   # Execute the portable IP script remotely and create a directory to contain the advanced Content Runtime files
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/configure-portable-private-ip.sh; bash /tmp/configure-portable-private-ip.sh \"${var.portable_private_ip}\" \"${var.portable_private_ip_netmask}\" \"${var.portable_private_ip_gateway}\"",
-      "mkdir -p ./advanced-content-runtime",
-    ]
-  }
+      "mkdir -p ./advanced-content-runtime"
+      ]
+   }
 
-  provisioner "file" {
-    content = <<EndOfFile
+provisioner "file" {
+   content     = <<EndOfFile
 #!/bin/bash
 #
 # Copyright : IBM Corporation 2016, 2017
@@ -755,7 +554,7 @@ function install_docker() {
         	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-18.09"
         else
         	echo "Install docker ee 17.03."
-        	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-17.03"
+        sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-17.03"
         fi
         sudo apt-get -y update
         sudo apt-get -y install docker-ee
@@ -856,12 +655,11 @@ if [ $RESULT -eq 1 ]; then
   exit 1
 fi
 EndOfFile
+   destination = "./advanced-content-runtime/prereq-check-install.sh"
+ }
 
-    destination = "./advanced-content-runtime/prereq-check-install.sh"
-  }
-
-  provisioner "file" {
-    content = <<EndOfFile
+ provisioner "file" {
+    content     = <<EndOfFile
 #!/bin/bash
 #
 # Copyright : IBM Corporation 2016, 2017
@@ -1248,12 +1046,11 @@ verify_software_directory
 verify_software_repo_directory
 verify_docker_ps_log
 EndOfFile
-
     destination = "./advanced-content-runtime/verify-installation.sh"
   }
 
   provisioner "file" {
-    content = <<EndOfFile
+   content     = <<EndOfFile
 #!/bin/bash
 #
 # Copyright : IBM Corporation 2016, 2017
@@ -1310,7 +1107,6 @@ function load_docker_image {
     docker image load -q < $2
   fi
 }
-
 #Get platform
 function get_platform() {
   PLATFORM=""
@@ -1420,12 +1216,11 @@ function is_devicemapper_supported(){
 	fi
 }
 EndOfFile
+   destination = "./advanced-content-runtime/utilities.sh"
+ }
 
-    destination = "./advanced-content-runtime/utilities.sh"
-  }
-
-  provisioner "file" {
-    content = <<EndOfFile
+ provisioner "file" {
+  content     = <<EndOfFile
 #!/bin/bash
 PM_CONFIG_BACKUP_PATH="./.advanced-runtime-config/"
 PM_CONFIG_PATH="/opt/ibm/docker/pattern-manager/config/"
@@ -1435,12 +1230,10 @@ if [ ! -d "$PM_CONFIG_PATH" ] || [ ! -f "$PM_CONFIG_PATH/config.json" ]; then
   sudo cp $PM_CONFIG_BACKUP_PATH/config.json $PM_CONFIG_PATH
 fi
 EndOfFile
-
-    destination = "./advanced-content-runtime/copyPMConfig.sh"
-  }
-
-  provisioner "file" {
-    content = <<EndOfFile
+  destination = "./advanced-content-runtime/copyPMConfig.sh"
+}
+ provisioner "file" {
+    content     = <<EndOfFile
 #!/bin/bash
 # encoding: UTF-8
 ########################################################
@@ -1540,11 +1333,10 @@ if [ $rc -gt 0 ]; then
 fi
 exit $rc
 EndOfFile
-
     destination = "./advanced-content-runtime/setupchef.sh"
   }
 
-  provisioner "file" {
+ provisioner "file" {
     content = <<EndOfFile
 #!/usr/bin/env python
 
@@ -1623,12 +1415,11 @@ with open(args.target_file, "w") as f:
 
 sys.exit()
 EndOfFile
-
     destination = "./advanced-content-runtime/crtconfig.py"
   }
 
-  provisioner "file" {
-    content = <<EndOfFile
+ provisioner "file" {
+    content     = <<EndOfFile
 opscode_erchef['s3_url_ttl'] = 3600
 nginx['ssl_certificate'] = "CUSTOMPEM"
 nginx['ssl_certificate_key'] = "CUSTOMKEY"
@@ -1636,12 +1427,11 @@ nginx['ssl_ciphers'] = "HIGH:MEDIUM:!LOW:!kEDH:!aNULL:!ADH:!eNULL:!EXP:!SSLv2:!S
 nginx['ssl_protocols'] = "TLSv1 TLSv1.1 TLSv1.2"
 nginx['stub_status'] = { :listen_port => 7777, :listen_host => '127.0.0.1' }
 EndOfFile
-
     destination = "./advanced-content-runtime/chef-server.rb"
   }
 
   provisioner "file" {
-    content = <<EndOfFile
+    content     = <<EndOfFile
 {
 	"authorization": { "personal_access_token": "$CAMHUB_ACCESS_TOKEN"},
         "github_hostname": "$CAMHUB_HOST",
@@ -1650,12 +1440,11 @@ EndOfFile
         "branch": "$COOKBOOK_VERSION"
 }
 EndOfFile
-
     destination = "./advanced-content-runtime/load.tmpl"
   }
 
   provisioner "file" {
-    content = <<EndOfFile
+    content     = <<EndOfFile
   #camc-pattern-manager
   camc-pattern-manager:
     image: $DOCKER_REGISTRY_PATH/camc-pattern-manager:$PATTERN_MGR_VERSION
@@ -1679,12 +1468,11 @@ EndOfFile
       - $CHEF_HOST_FQDN:$CHEF_IPADDR
       - $SOFTWARE_REPO_FQDN:$SOFTWARE_REPO_IP
 EndOfFile
-
     destination = "./advanced-content-runtime/camc-pattern-manager.tmpl"
   }
 
   provisioner "file" {
-    content = <<EndOfFile
+    content     = <<EndOfFile
   #camc-sw-repo
   camc-sw-repo:
     image: $DOCKER_REGISTRY_PATH/camc-sw-repo:$SOFTWARE_REPO_VERSION
@@ -1708,12 +1496,11 @@ EndOfFile
       - "$SOFTWARE_REPO_SECURE_PORT:$SOFTWARE_REPO_SECURE_PORT"
     privileged: true
 EndOfFile
-
     destination = "./advanced-content-runtime/camc-sw-repo.tmpl"
   }
 
   provisioner "file" {
-    content = <<EndOfFile
+    content     = <<EndOfFile
 #
 # Copyright : IBM Corporation 2016, 2016
 #
@@ -1724,12 +1511,11 @@ version: '2'
 services:
 
 EndOfFile
-
     destination = "./advanced-content-runtime/infra-docker-compose.tmpl"
   }
 
   provisioner "file" {
-    content = <<EndOfFile
+    content     = <<EndOfFile
 #!/bin/bash
 #
 # Copyright : IBM Corporation 2017. All rights reserved.
@@ -1776,12 +1562,11 @@ sed -i "s/\(--$imagename\_version=\)\(.*\)/\1$2/" `find $toolpath -name .launch-
 
 echo "Done."
 EndOfFile
-
     destination = "./advanced-content-runtime/image-upgrade.sh"
   }
 
   provisioner "file" {
-    content = <<EndOfFile
+    content     = <<EndOfFile
 # Properties file used to create the directory structure on the location disk
 # All path are relative to ROOT : /opt/ibm/docker/software-repo/var/swRepo/private
 apache/httpd/v2.4.25/rhel7
@@ -1799,24 +1584,22 @@ wmq/v8.0/maint
 wmq/v9.0/base
 wmq/v9.0/maint
 EndOfFile
-
     destination = "./advanced-content-runtime/mkdir.properties"
   }
 
   provisioner "file" {
-    content = <<EndOfFile
+    content     = <<EndOfFile
 LayoutPolicyVersion=0.0.0.1
 LayoutPolicy=Composite
 #repository.url.was=./WAS9
 #repository.url.liberty=./Liberty
 #repository.url.jdk8=./jdk8
 EndOfFile
-
     destination = "./advanced-content-runtime/repository.config"
   }
 
   provisioner "file" {
-    content = <<EndOfFile
+    content     = <<EndOfFile
 #
 # Copyright : IBM Corporation 2016, 2016
 #
@@ -1946,20 +1729,20 @@ function docker_disk()
   DEVICEMAPPER_SUPPORTED=$1
   if [[ $DEVICEMAPPER_SUPPORTED == "true" ]]; then
     echo "Use storage driver devicemapper."
-	  # Ubuntu 14.04 fails to mount the disk because of a downlevel API, do not process the disk if present
-	  if [[ ! -z "$DISK_NAME" ]] && [[ `sudo lvcreate --help | egrep wipesignatures` ]] ; then
-	     echo "Obtained disk name: $DISK_NAME"
-	     ONE=1
-	     DOCKER_DISK_NAME=$DISK_NAME$ONE
-	     (echo n; echo p; echo " "; echo " "; echo " "; echo t; echo 8e; echo w;) | sudo fdisk $DISK_NAME
-	     sudo pvcreate $DOCKER_DISK_NAME
-	     echo -e "{ \n\"storage-driver\": \"devicemapper\",\n\t\"storage-opts\": [\n\t\"dm.directlvm_device=$DOCKER_DISK_NAME\",\n\t\"dm.directlvm_device_force=true\"\n\t] \n}" | sudo tee /etc/docker/daemon.json
-	     sudo mkdir -p /etc/lvm/profile/
-	     echo -e "activation{\nthin_pool_autoextend_threshold=80\nthin_pool_autoextend_percent=20\n}\n" | sudo tee /etc/lvm/profile/docker-thinpool.profile
-	     sudo mv /var/lib/docker /var/lib/docker.origin || true
-	  else
-	     echo -e "{\n\"storage-driver\": \"devicemapper\"\n}" | sudo tee /etc/docker/daemon.json
-	  fi
+  # Ubuntu 14.04 fails to mount the disk because of a downlevel API, do not process the disk if present
+  if [[ ! -z "$DISK_NAME" ]] && [[ `sudo lvcreate --help | egrep wipesignatures` ]] ; then
+     echo "Obtained disk name: $DISK_NAME"
+     ONE=1
+     DOCKER_DISK_NAME=$DISK_NAME$ONE
+     (echo n; echo p; echo " "; echo " "; echo " "; echo t; echo 8e; echo w;) | sudo fdisk $DISK_NAME
+     sudo pvcreate $DOCKER_DISK_NAME
+     echo -e "{ \n\"storage-driver\": \"devicemapper\",\n\t\"storage-opts\": [\n\t\"dm.directlvm_device=$DOCKER_DISK_NAME\",\n\t\"dm.directlvm_device_force=true\"\n\t] \n}" | sudo tee /etc/docker/daemon.json
+     sudo mkdir -p /etc/lvm/profile/
+     echo -e "activation{\nthin_pool_autoextend_threshold=80\nthin_pool_autoextend_percent=20\n}\n" | sudo tee /etc/lvm/profile/docker-thinpool.profile
+     sudo mv /var/lib/docker /var/lib/docker.origin || true
+  else
+     echo -e "{\n\"storage-driver\": \"devicemapper\"\n}" | sudo tee /etc/docker/daemon.json
+  fi
   else
     echo "Use storage driver overlay2."
 	  if [[ ! -z "$DISK_NAME" ]] ; then
@@ -2097,7 +1880,7 @@ while IFS='' read -r parameter || [[ -n "$parameter" ]]; do
         [[ $parameter =~ ^-de|--docker_ee_repo= ]] && { DOCKER_EE_REPO=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-dc|--docker_configuration= ]] && { CONFIGURATION=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-bc|--byochef= ]] && { BYOCHEF=`echo $parameter|cut -f2- -d'='| tr '[:upper:]' '[:lower:]'`; continue;  };
-        [[ $parameter =~ ^-of|--offline_installation= ]] && { OFFLINE_INSTALL=`echo $parameter|cut -f2- -d'='| tr '[:upper:]' '[:lower:]'`; continue;  };
+        [[ $parameter =~ ^-of|--offline_installation= ]] && { OFFLINE_INSTALL=`echo $parameter|cut -f2- -d'='`| tr '[:upper:]' '[:lower:]'; continue;  };
         [[ $parameter =~ ^-ca|--chef_admin= ]] && { CHEF_ADMIN=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-ch|--chef_host= ]] && { CHEF_HOST=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-co|--chef_org= ]] && { CHEF_ORG=`echo $parameter|cut -f2- -d'='`; continue;  };
@@ -2363,12 +2146,9 @@ if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_K
 
     if [ "$EXISTING_PORT" != "$SOFTWARE_REPO_PORT" ] && [ -e "$CONFIG_FILE" ]; then
         TMP_FILE=`mktemp`
-        ENCODED_TMP_FILE=`mktemp`
         base64 --decode $CONFIG_FILE > $TMP_FILE
         sed -i 's/\"$EXISTING_PORT\",/\"$SOFTWARE_REPO_PORT\",/' $TMP_FILE
-        base64 $TMP_FILE > $ENCODED_TMP_FILE
-        sudo cp $ENCODED_TMP_FILE $CONFIG_FILE
-        sudo rm $TMP_FILE $ENCODED_TMP_FILE        
+        base64 $TMP_FILE > $CONFIG_FILE
     fi
 
     #Create the Private/Public Keys for Pattern-Manager
@@ -2381,7 +2161,7 @@ if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_K
     sudo python $runtimepath/crtconfig.py $PATTERN_MGR_ACCESS_TOKEN $PATTERN_MGR_ADMIN_TOKEN -c=encoded $CONFIG_PATH/cam_runtime_key_`hostname` $CHEF_PEM_LOC $CHEF_HOST_FQDN $CHEF_ORG $CHEF_IPADDR $CHEF_ADMIN $SOFTWARE_REPO_IP $SOFTWARE_REPO_PORT $CONFIG_PATH/config.json $CHEF_CLIENT_VERSION
 
     # Backup the generated config file
-    sudo cp $CONFIG_FILE $parmdir
+    cp $CONFIG_FILE $parmdir
 
     #Changing created files' permissions
     sudo chmod 755 $CONFIG_PATH/cam_runtime_key_`hostname` $CONFIG_PATH/config.json
@@ -2550,314 +2330,122 @@ end_message "Successful"
 #clean up
 [[ ! "$DEBUG" = "true" ]] && { sed -i -e '/^--docker_registry_token=/d' -e '/^--software_repo_pass=/d' -e '/^--im_repo_pass=/d' -e '/^--ibm_pm_private_ssh_key=/d' -e '/^--ibm_contenthub_git_access_token=/d' -e '/^--encryption_passphrase=/d'  $parmfile ; }
 EndOfFile
-
     destination = "./advanced-content-runtime/launch-docker-compose.sh"
   }
+
 } # End of ibm_cloud resources
+
 
 resource "null_resource" "call_launcher" {
   depends_on = ["ibm_compute_vm_instance.single-node"]
 
   triggers {
-    private_key_changed      = "${var.ibm_pm_private_ssh_key}"
-    public_key_changed       = "${var.ibm_pm_public_ssh_key}"
-    pm_key_name_changed      = "${var.ibm_pm_public_ssh_key_name}"
-    repo_pass_changed        = "${var.ibm_sw_repo_password}"
-    repo_port_changed        = "${var.ibm_sw_repo_port}"
-    repo_secure_port_changed = "${var.ibm_sw_repo_secure_port}"
-    chef_fqdn_changed        = "${var.chef_fqdn}"
-    chef_ip_changed          = "${var.chef_ip}"
-    chef_pem_changed         = "${var.chef_pem}"
-    chef_org_changed         = "${var.chef_org}"
-    chef_admin_changed       = "${var.chef_admin}"
-    chef_client_changed      = "${var.chef_client_version}"
-    cr_instance_ids          = "${join(",", ibm_compute_vm_instance.single-node.*.id)}"
+private_key_changed = "${var.ibm_pm_private_ssh_key}",
+public_key_changed  = "${var.ibm_pm_public_ssh_key}",
+pm_key_name_changed  = "${var.ibm_pm_public_ssh_key_name}",
+repo_pass_changed   = "${var.ibm_sw_repo_password}",
+repo_port_changed        = "${var.ibm_sw_repo_port}",
+repo_secure_port_changed = "${var.ibm_sw_repo_secure_port}",
+chef_fqdn_changed   = "${var.chef_fqdn}",
+chef_ip_changed     = "${var.chef_ip}",
+chef_pem_changed    = "${var.chef_pem}",
+chef_org_changed    = "${var.chef_org}",
+chef_admin_changed    = "${var.chef_admin}",
+chef_client_changed   = "${var.chef_client_version}",
+    cr_instance_ids = "${join(",", ibm_compute_vm_instance.single-node.*.id)}"
   }
 
   connection {
-    host                = "${var.network_visibility == "public" ? ibm_compute_vm_instance.single-node.ipv4_address : ibm_compute_vm_instance.single-node.ipv4_address_private}"
-    type                = "ssh"
-    user                = "root"
-    private_key         = "${tls_private_key.ssh.private_key_pem}"
-    bastion_host        = "${var.bastion_host}"
-    bastion_user        = "${var.bastion_user}"
-    bastion_private_key = "${ length(var.bastion_private_key) > 0 ? base64decode(var.bastion_private_key) : var.bastion_private_key}"
-    bastion_port        = "${var.bastion_port}"
-    bastion_host_key    = "${var.bastion_host_key}"
-    bastion_password    = "${var.bastion_password}"
+    host = "${var.network_visibility == "public" ? ibm_compute_vm_instance.single-node.ipv4_address : ibm_compute_vm_instance.single-node.ipv4_address_private}"
+    type = "ssh"
+    user = "root"
+    private_key = "${tls_private_key.ssh.private_key_pem}"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod 775 ./advanced-content-runtime/launch-docker-compose.sh",
-      "chmod 775 ./advanced-content-runtime/image-upgrade.sh",
-      "bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='${var.docker_registry_token}' --nfs_mount_point='${var.nfs_mount}' --encryption_passphrase='${var.encryption_passphrase}' --software_repo_user='${var.ibm_sw_repo_user}' --software_repo_pass='${var.ibm_sw_repo_password}' --im_repo_user='${var.ibm_im_repo_user_hidden}' --im_repo_pass='${var.ibm_im_repo_password_hidden}'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='${var.ibm_sw_repo_port}' --software_repo_secure_port='${var.ibm_sw_repo_secure_port}' --pattern_mgr=pattern --ibm_contenthub_git_host='${var.ibm_contenthub_git_host}' --ibm_contenthub_git_organization='${var.ibm_contenthub_git_organization}' --ibm_openhub_git_organization='${var.ibm_openhub_git_organization}' --chef_org='${var.chef_org}' --chef_admin='${var.chef_admin}' --chef_fqdn='${var.chef_fqdn}' --chef_ip='${var.chef_ip}' --chef_pem='${var.chef_pem}' --docker_registry='${var.docker_registry}' --chef_version=${var.chef_version} --chef_client_version='${var.chef_client_version}' --chef_client_path='${var.chef_client_path}' --ibm_pm_access_token='${var.ibm_pm_access_token}' --ibm_pm_admin_token='${var.ibm_pm_admin_token}' --camc-sw-repo_version='${var.docker_registry_camc_sw_repo_version}' --docker_ee_repo='${var.docker_ee_repo}' --camc-pattern-manager_version='${var.docker_registry_camc_pattern_manager_version}' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='${var.ibm_pm_public_ssh_key_name}' --ibm_pm_private_ssh_key='${var.ibm_pm_private_ssh_key}' --ibm_pm_public_ssh_key='${var.ibm_pm_public_ssh_key}' --user_public_ssh_key='${var.user_public_ssh_key}' --prereq_strictness='${var.prereq_strictness}' --ip_address='${var.ipv4_address}' --template_timestamp='${var.template_timestamp_hidden}' --installer_docker='${var.installer_docker}' --installer_docker_compose='${var.installer_docker_compose}' --sw_repo_image='${var.sw_repo_image}' --pm_image='${var.pm_image}' --template_debug='${var.template_debug}' --portable_private_ip='${var.portable_private_ip}' --byochef='${var.byochef}' --offline_installation='${var.offline_installation}' --install_cookbooks='${var.install_cookbooks}'\"",
-    ]
+        "chmod 775 ./advanced-content-runtime/launch-docker-compose.sh",
+        "chmod 775 ./advanced-content-runtime/image-upgrade.sh",
+"bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='${var.docker_registry_token}' --nfs_mount_point='${var.nfs_mount}' --encryption_passphrase='${var.encryption_passphrase}' --software_repo_user='${var.ibm_sw_repo_user}' --software_repo_pass='${var.ibm_sw_repo_password}' --im_repo_user='${var.ibm_im_repo_user_hidden}' --im_repo_pass='${var.ibm_im_repo_password_hidden}'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='${var.ibm_sw_repo_port}' --software_repo_secure_port='${var.ibm_sw_repo_secure_port}' --pattern_mgr=pattern --ibm_contenthub_git_host='${var.ibm_contenthub_git_host}' --ibm_contenthub_git_organization='${var.ibm_contenthub_git_organization}' --ibm_openhub_git_organization='${var.ibm_openhub_git_organization}' --chef_org='${var.chef_org}' --chef_admin='${var.chef_admin}' --chef_fqdn='${var.chef_fqdn}' --chef_ip='${var.chef_ip}' --chef_pem='${var.chef_pem}' --docker_registry='${var.docker_registry}' --chef_version=${var.chef_version} --chef_client_version='${var.chef_client_version}' --chef_client_path='${var.chef_client_path}' --ibm_pm_access_token='${var.ibm_pm_access_token}' --ibm_pm_admin_token='${var.ibm_pm_admin_token}' --camc-sw-repo_version='${var.docker_registry_camc_sw_repo_version}' --docker_ee_repo='${var.docker_ee_repo}' --camc-pattern-manager_version='${var.docker_registry_camc_pattern_manager_version}' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='${var.ibm_pm_public_ssh_key_name}' --ibm_pm_private_ssh_key='${var.ibm_pm_private_ssh_key}' --ibm_pm_public_ssh_key='${var.ibm_pm_public_ssh_key}' --user_public_ssh_key='${var.user_public_ssh_key}' --prereq_strictness='${var.prereq_strictness}' --ip_address='${var.ipv4_address}' --template_timestamp='${var.template_timestamp_hidden}' --installer_docker='${var.installer_docker}' --installer_docker_compose='${var.installer_docker_compose}' --sw_repo_image='${var.sw_repo_image}' --pm_image='${var.pm_image}' --template_debug='${var.template_debug}' --portable_private_ip='${var.portable_private_ip}' --byochef='${var.byochef}' --offline_installation='${var.offline_installation}' --install_cookbooks='${var.install_cookbooks}'\""
+      ]
   }
 } # End of null_resource
 
 ### IBM output variables
-output "private_key" {
-  value = "${tls_private_key.ssh.private_key_pem}"
-}
-
-output "public_key" {
-  value = "${tls_private_key.ssh.public_key_pem}"
-}
-
-output "ip_address" {
-  value = "${var.network_visibility == "public" ? "${ibm_compute_vm_instance.single-node.ipv4_address}" : "${ibm_compute_vm_instance.single-node.ipv4_address_private}"}"
-}
-
-output "ibm_sw_repo" {
-  value = "https://${var.network_visibility == "public" ? "${ibm_compute_vm_instance.single-node.ipv4_address}" : "${ibm_compute_vm_instance.single-node.ipv4_address_private}"}:${var.ibm_sw_repo_secure_port}"
-}
-
-output "ibm_im_repo" {
-  value = "https://${var.network_visibility == "public" ? "${ibm_compute_vm_instance.single-node.ipv4_address}" : "${ibm_compute_vm_instance.single-node.ipv4_address_private}"}:${var.ibm_sw_repo_secure_port}/IMRepo"
-}
-
-output "ibm_pm_service" {
-  value = "https://${var.network_visibility == "public" ? "${ibm_compute_vm_instance.single-node.ipv4_address}" : "${ibm_compute_vm_instance.single-node.ipv4_address_private}"}:5443"
-}
-
-output "ibm_im_repo_user" {
-  value = "${var.ibm_sw_repo_user}"
-}
-
-output "ibm_im_repo_password" {
-  value = "${var.ibm_sw_repo_password}"
-}
-
-output "template_timestamp" {
-  value = "2018-06-13 19:03:01"
-}
+  output "private_key" {
+  value = "${tls_private_key.ssh.private_key_pem}" }
+  output "public_key" {
+  value = "${tls_private_key.ssh.public_key_pem}" }
+  output "ip_address" {
+  value = "${var.network_visibility == "public" ? "${ibm_compute_vm_instance.single-node.ipv4_address}" : "${ibm_compute_vm_instance.single-node.ipv4_address_private}"}" }
+  output "ibm_sw_repo" {
+  value = "https://${var.network_visibility == "public" ? "${ibm_compute_vm_instance.single-node.ipv4_address}" : "${ibm_compute_vm_instance.single-node.ipv4_address_private}"}:${var.ibm_sw_repo_secure_port}" }
+  output "ibm_im_repo" {
+  value = "https://${var.network_visibility == "public" ? "${ibm_compute_vm_instance.single-node.ipv4_address}" : "${ibm_compute_vm_instance.single-node.ipv4_address_private}"}:${var.ibm_sw_repo_secure_port}/IMRepo" }
+  output "ibm_pm_service" {
+  value = "https://${var.network_visibility == "public" ? "${ibm_compute_vm_instance.single-node.ipv4_address}" : "${ibm_compute_vm_instance.single-node.ipv4_address_private}"}:5443" }
+  output "ibm_im_repo_user" {
+  value = "${var.ibm_sw_repo_user}" }
+  output "ibm_im_repo_password" {
+  value = "${var.ibm_sw_repo_password}" }
+  output "template_timestamp" {
+  value = "2018-06-13 19:03:01" }
 
 ### End IBM output variables
-output "docker_registry_token" {
-  value = "${var.docker_registry_token}"
-}
-
-output "docker_registry" {
-  value = "${var.docker_registry}"
-}
-
-output "docker_registry_camc_pattern_manager_version" {
-  value = "${var.docker_registry_camc_pattern_manager_version}"
-}
-
-output "docker_registry_camc_sw_repo_version" {
-  value = "${var.docker_registry_camc_sw_repo_version}"
-}
-
-output "ibm_sw_repo_user" {
-  value = "${var.ibm_sw_repo_user}"
-}
-
-output "ibm_sw_repo_password" {
-  value = "${var.ibm_sw_repo_password}"
-}
-
-output "ibm_sw_repo_port" {
-  value = "${var.ibm_sw_repo_port}"
-}
-
-output "ibm_sw_repo_secure_port" {
-  value = "${var.ibm_sw_repo_secure_port}"
-}
-
-output "chef_client_version" {
-  value = "${var.chef_client_version}"
-}
-
-output "chef_client_path" {
-  value = "${var.chef_client_path}"
-}
-
-output "ibm_im_repo_user_hidden" {
-  value = "${var.ibm_im_repo_user_hidden}"
-}
-
-output "ibm_im_repo_password_hidden" {
-  value = "${var.ibm_im_repo_password_hidden}"
-}
-
-output "ibm_contenthub_git_host" {
-  value = "${var.ibm_contenthub_git_host}"
-}
-
-output "ibm_contenthub_git_organization" {
-  value = "${var.ibm_contenthub_git_organization}"
-}
-
-output "ibm_openhub_git_organization" {
-  value = "${var.ibm_openhub_git_organization}"
-}
-
-output "offline_installation" {
-  value = "${var.offline_installation}"
-}
-
-output "docker_ee_repo" {
-  value = "${var.docker_ee_repo}"
-}
-
-output "chef_org" {
-  value = "${var.chef_org}"
-}
-
-output "chef_admin" {
-  value = "${var.chef_admin}"
-}
-
-output "byochef" {
-  value = "${var.byochef}"
-}
-
-output "install_cookbooks" {
-  value = "${var.install_cookbooks}"
-}
-
-output "chef_fqdn" {
-  value = "${var.chef_fqdn}"
-}
-
-output "chef_ip" {
-  value = "${var.chef_ip}"
-}
-
-output "chef_pem" {
-  value = "${var.chef_pem}"
-}
-
-output "ibm_pm_access_token" {
-  value = "${var.ibm_pm_access_token}"
-}
-
-output "ibm_pm_admin_token" {
-  value = "${var.ibm_pm_admin_token}"
-}
-
-output "ibm_pm_public_ssh_key_name" {
-  value = "${var.ibm_pm_public_ssh_key_name}"
-}
-
-output "ibm_pm_private_ssh_key" {
-  value = "${var.ibm_pm_private_ssh_key}"
-}
-
-output "ibm_pm_public_ssh_key" {
-  value = "${var.ibm_pm_public_ssh_key}"
-}
-
-output "user_public_ssh_key" {
-  value = "${var.user_public_ssh_key}"
-}
-
-output "template_timestamp_hidden" {
-  value = "${var.template_timestamp_hidden}"
-}
-
-output "template_debug" {
-  value = "${var.template_debug}"
-}
-
-output "runtime_hostname" {
-  value = "${var.runtime_hostname}"
-}
-
-output "runtime_domain" {
-  value = "${var.runtime_domain}"
-}
-
-output "cam_public_key" {
-  value = "${var.cam_public_key}"
-}
-
-output "ipv4_address" {
-  value = "${var.ipv4_address}"
-}
-
-output "portable_private_ip" {
-  value = "${var.portable_private_ip}"
-}
-
-output "encryption_passphrase" {
-  value = "${var.encryption_passphrase}"
-}
-
-output "portable_private_ip_netmask" {
-  value = "${var.portable_private_ip_netmask}"
-}
-
-output "portable_private_ip_gateway" {
-  value = "${var.portable_private_ip_gateway}"
-}
-
-output "ibmcloud_os_image" {
-  value = "${var.ibmcloud_os_image}"
-}
-
-output "nfs_mount" {
-  value = "${var.nfs_mount}"
-}
-
-output "bluemix_softlayer_datacenter" {
-  value = "${var.bluemix_softlayer_datacenter}"
-}
-
-output "private_subnet" {
-  value = "${var.private_subnet}"
-}
-
-output "private_vlan_name" {
-  value = "${var.private_vlan_name}"
-}
-
-output "dedicated_acct_host_only" {
-  value = "${var.dedicated_acct_host_only}"
-}
-
-output "hourly_billing" {
-  value = "${var.hourly_billing}"
-}
-
-output "network_speed" {
-  value = "${var.network_speed}"
-}
-
-output "cores" {
-  value = "${var.cores}"
-}
-
-output "memory" {
-  value = "${var.memory}"
-}
-
-output "network_visibility" {
-  value = "${var.network_visibility}"
-}
-
-output "prereq_strictness" {
-  value = "${var.prereq_strictness}"
-}
-
-output "installer_docker" {
-  value = "${var.installer_docker}"
-}
-
-output "installer_docker_compose" {
-  value = "${var.installer_docker_compose}"
-}
-
-output "sw_repo_image" {
-  value = "${var.sw_repo_image}"
-}
-
-output "pm_image" {
-  value = "${var.pm_image}"
-}
-
-output "chef_version" {
-  value = "${var.chef_version}"
-}
+output "docker_registry_token" { value = "${var.docker_registry_token}"}
+output "docker_registry" { value = "${var.docker_registry}"}
+output "docker_registry_camc_pattern_manager_version" { value = "${var.docker_registry_camc_pattern_manager_version}"}
+output "docker_registry_camc_sw_repo_version" { value = "${var.docker_registry_camc_sw_repo_version}"}
+output "ibm_sw_repo_user" { value = "${var.ibm_sw_repo_user}"}
+output "ibm_sw_repo_password" { value = "${var.ibm_sw_repo_password}"}
+output "ibm_sw_repo_port" { value = "${var.ibm_sw_repo_port}"}
+output "ibm_sw_repo_secure_port" { value = "${var.ibm_sw_repo_secure_port}"}
+output "chef_client_version" { value = "${var.chef_client_version}"}
+output "chef_client_path" { value = "${var.chef_client_path}"}
+output "ibm_im_repo_user_hidden" { value = "${var.ibm_im_repo_user_hidden}"}
+output "ibm_im_repo_password_hidden" { value = "${var.ibm_im_repo_password_hidden}"}
+output "ibm_contenthub_git_host" { value = "${var.ibm_contenthub_git_host}"}
+output "ibm_contenthub_git_organization" { value = "${var.ibm_contenthub_git_organization}"}
+output "ibm_openhub_git_organization" { value = "${var.ibm_openhub_git_organization}"}
+output "offline_installation" { value = "${var.offline_installation}"}
+output "docker_ee_repo" { value = "${var.docker_ee_repo}"}
+output "chef_org" { value = "${var.chef_org}"}
+output "chef_admin" { value = "${var.chef_admin}"}
+output "byochef" { value = "${var.byochef}"}
+output "install_cookbooks" { value = "${var.install_cookbooks}"}
+output "chef_fqdn" { value = "${var.chef_fqdn}"}
+output "chef_ip" { value = "${var.chef_ip}"}
+output "chef_pem" { value = "${var.chef_pem}"}
+output "ibm_pm_access_token" { value = "${var.ibm_pm_access_token}"}
+output "ibm_pm_admin_token" { value = "${var.ibm_pm_admin_token}"}
+output "ibm_pm_public_ssh_key_name" { value = "${var.ibm_pm_public_ssh_key_name}"}
+output "ibm_pm_private_ssh_key" { value = "${var.ibm_pm_private_ssh_key}"}
+output "ibm_pm_public_ssh_key" { value = "${var.ibm_pm_public_ssh_key}"}
+output "user_public_ssh_key" { value = "${var.user_public_ssh_key}"}
+output "template_timestamp_hidden" { value = "${var.template_timestamp_hidden}"}
+output "template_debug" { value = "${var.template_debug}"}
+output "runtime_hostname" { value = "${var.runtime_hostname}"}
+output "runtime_domain" { value = "${var.runtime_domain}"}
+output "cam_public_key" { value = "${var.cam_public_key}"}
+output "ipv4_address" { value = "${var.ipv4_address}"}
+output "portable_private_ip" { value = "${var.portable_private_ip}"}
+output "encryption_passphrase" { value = "${var.encryption_passphrase}"}
+output "portable_private_ip_netmask" { value = "${var.portable_private_ip_netmask}"}
+output "portable_private_ip_gateway" { value = "${var.portable_private_ip_gateway}"}
+output "ibmcloud_os_image" { value = "${var.ibmcloud_os_image}"}
+output "nfs_mount" { value = "${var.nfs_mount}"}
+output "bluemix_softlayer_datacenter" { value = "${var.bluemix_softlayer_datacenter}"}
+output "private_subnet" { value = "${var.private_subnet}"}
+output "private_vlan_name" { value = "${var.private_vlan_name}"}
+output "dedicated_acct_host_only" { value = "${var.dedicated_acct_host_only}"}
+output "hourly_billing" { value = "${var.hourly_billing}"}
+output "network_speed" { value = "${var.network_speed}"}
+output "cores" { value = "${var.cores}"}
+output "memory" { value = "${var.memory}"}
+output "network_visibility" { value = "${var.network_visibility}"}
+output "prereq_strictness" { value = "${var.prereq_strictness}"}
+output "installer_docker" { value = "${var.installer_docker}"}
+output "installer_docker_compose" { value = "${var.installer_docker_compose}"}
+output "sw_repo_image" { value = "${var.sw_repo_image}"}
+output "pm_image" { value = "${var.pm_image}"}
+output "chef_version" { value = "${var.chef_version}"}

@@ -458,7 +458,7 @@ function install_docker() {
         	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-18.09"
         else
         	echo "Install docker ee 17.03."
-        	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-17.03"
+        sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-17.03"
         fi
         sudo apt-get -y update
         sudo apt-get -y install docker-ee
@@ -1784,7 +1784,7 @@ while IFS='' read -r parameter || [[ -n "$parameter" ]]; do
         [[ $parameter =~ ^-de|--docker_ee_repo= ]] && { DOCKER_EE_REPO=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-dc|--docker_configuration= ]] && { CONFIGURATION=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-bc|--byochef= ]] && { BYOCHEF=`echo $parameter|cut -f2- -d'='| tr '[:upper:]' '[:lower:]'`; continue;  };
-        [[ $parameter =~ ^-of|--offline_installation= ]] && { OFFLINE_INSTALL=`echo $parameter|cut -f2- -d'='| tr '[:upper:]' '[:lower:]'`; continue;  };
+        [[ $parameter =~ ^-of|--offline_installation= ]] && { OFFLINE_INSTALL=`echo $parameter|cut -f2- -d'='`| tr '[:upper:]' '[:lower:]'; continue;  };
         [[ $parameter =~ ^-ca|--chef_admin= ]] && { CHEF_ADMIN=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-ch|--chef_host= ]] && { CHEF_HOST=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-co|--chef_org= ]] && { CHEF_ORG=`echo $parameter|cut -f2- -d'='`; continue;  };
@@ -2050,12 +2050,9 @@ if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_K
 
     if [ "$EXISTING_PORT" != "$SOFTWARE_REPO_PORT" ] && [ -e "$CONFIG_FILE" ]; then
         TMP_FILE=`mktemp`
-        ENCODED_TMP_FILE=`mktemp`
         base64 --decode $CONFIG_FILE > $TMP_FILE
         sed -i 's/\"$EXISTING_PORT\",/\"$SOFTWARE_REPO_PORT\",/' $TMP_FILE
-        base64 $TMP_FILE > $ENCODED_TMP_FILE
-        sudo cp $ENCODED_TMP_FILE $CONFIG_FILE
-        sudo rm $TMP_FILE $ENCODED_TMP_FILE        
+        base64 $TMP_FILE > $CONFIG_FILE
     fi
 
     #Create the Private/Public Keys for Pattern-Manager
@@ -2068,7 +2065,7 @@ if [ ! -d $CONFIG_PATH ] || [ "$CAM_PRIVATE_KEY_ENC" != "$EXISTING_CAM_PRIVATE_K
     sudo python $runtimepath/crtconfig.py $PATTERN_MGR_ACCESS_TOKEN $PATTERN_MGR_ADMIN_TOKEN -c=encoded $CONFIG_PATH/cam_runtime_key_`hostname` $CHEF_PEM_LOC $CHEF_HOST_FQDN $CHEF_ORG $CHEF_IPADDR $CHEF_ADMIN $SOFTWARE_REPO_IP $SOFTWARE_REPO_PORT $CONFIG_PATH/config.json $CHEF_CLIENT_VERSION
 
     # Backup the generated config file
-    sudo cp $CONFIG_FILE $parmdir
+    cp $CONFIG_FILE $parmdir
 
     #Changing created files' permissions
     sudo chmod 755 $CONFIG_PATH/cam_runtime_key_`hostname` $CONFIG_PATH/config.json
