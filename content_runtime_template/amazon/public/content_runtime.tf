@@ -481,8 +481,22 @@ function download_chef_client() {
   fi
 }
 
+#Installs latest if overylay compat kernel otherwise 18.06
+#which is the last version that supports devicemapper.
+function install_edge_docker(){
+	KERNEL_OVERLAY_COMPAT=$(is_kernel_overlay_compat)
+	if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
+		echo "Install latest docker ce."
+    curl -fsSL https://get.docker.com/ | sudo sh
+  else
+  	echo "Install docker ce 18.06."
+  	curl -fsSL https://get.docker.com/ | sudo VERSION=18.06 sh
+	fi	
+}
+
 function install_docker() {
   # Install
+  KERNEL_OVERLAY_COMPAT=$(is_kernel_overlay_compat)
   if [[ -n $PARAM_DOCKER ]]; then
     install_binary "docker" $PARAM_DOCKER
   else
@@ -495,7 +509,13 @@ function install_docker() {
         fi
         sudo apt-get -y install apt-transport-https ca-certificates software-properties-common
         curl -fsSL $DOCKER_EE_REPO/ubuntu/gpg | sudo apt-key add -
+        if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
+        	echo "Install docker ee 18.09."
+        	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-18.09"
+        else
+        	echo "Install docker ee 17.03."
         sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-17.03"
+        fi
         sudo apt-get -y update
         sudo apt-get -y install docker-ee
       else
@@ -505,6 +525,10 @@ function install_docker() {
           sudo sh -c 'echo "'$MAIN_VERSION'" > /etc/yum/vars/dockerosversion'
           sudo yum install -y yum-utils device-mapper-persistent-data lvm2
           sudo yum-config-manager --add-repo $DOCKER_EE_REPO/rhel/docker-ee.repo
+          if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
+          	echo "Install docker ee 18.09."
+          	sudo yum-config-manager --enable docker-ee-stable-18.09
+          fi
           # Install Docker EE
           sudo yum makecache fast
           if [[ $CLOUD_PROVIDER = *"amazon"* ]]; then
@@ -526,10 +550,10 @@ function install_docker() {
     else # Otherwise install CE in supported platforms or install from provided binary
       if [[ $PLATFORM == *"ubuntu"* ]] || [[ $PLATFORM == *"centos"* ]]; then
           [[ $PLATFORM == *"ubuntu"* ]] && wait_apt_lock
-          curl -fsSL https://get.docker.com/ | sudo sh
+          install_edge_docker
           if [ -z "`which docker`" ]; then # retry failed install, could be download issues
               [[ $PLATFORM == *"ubuntu"* ]] && wait_apt_lock
-              curl -fsSL https://get.docker.com/ | sudo sh
+              install_edge_docker
           fi
       fi
       if [ $? -ne "0" ]; then
@@ -1043,6 +1067,114 @@ function load_docker_image {
     docker image load -q < $2
   fi
 }
+#Get platform
+function get_platform() {
+  PLATFORM=""
+  if command_exists python; then
+    PLATFORM=`python -c "import platform;print(platform.platform())" | rev | cut -d '-' -f3 | rev | tr -d '".' | tr '[:upper:]' '[:lower:]'`
+  else
+    if command_exists python3; then
+      PLATFORM=`python3 -c "import platform;print(platform.platform())" | rev | cut -d '-' -f3 | rev | tr -d '".' | tr '[:upper:]' '[:lower:]'`
+    fi
+  fi
+
+  # Check if the executing platform is supported
+  if [[ $PLATFORM == *"ubuntu"* ]] || [[ $PLATFORM == *"redhat"* ]] || [[ $PLATFORM == *"rhel"* ]] || [[ $PLATFORM == *"centos"* ]]; then
+    echo "$PLATFORM"
+  else
+    echo "ERROR"
+  fi
+}
+
+#Get platform version
+function get_platform_version() {
+  PLATFORM_VERSION=""
+  if command_exists python; then
+    PLATFORM_VERSION=`python -c "import platform;print(platform.platform())" | rev | cut -d '-' -f2 | rev`
+  else
+    if command_exists python3; then
+      PLATFORM_VERSION=`python3 -c "import platform;print(platform.platform())" | rev | cut -d '-' -f2 | rev`
+    fi
+  fi
+  if [[ -z $PLATFORM_VERSION ]]; then
+    echo "ERROR"
+  else
+    echo $PLATFORM_VERSION
+  fi
+}
+
+#True if kernel supports overlayfs.
+#OverlayFS is supported on Kernel 4 and above. On RHEL from 3.10.0-693. 
+function is_kernel_overlay_compat(){
+	KERNEL=`uname -r | cut -d'.' -f1`
+	if [ "$KERNEL" -lt 4 ]; then
+		if [ "$KERNEL" -lt 3 ]; then
+			#0.x, 1.x, 2.x
+			echo 'false'
+			return
+		else
+			#KERNEL 3
+			MAJOR=`uname -r | cut -d'.' -f2`
+			if [ "$MAJOR" -lt 10 ]; then
+				#3.x (0 to 9)
+				echo 'false'
+				return
+			elif [ "$MAJOR" -eq 10 ]; then
+				#3.10.x
+				MINOR=`uname -r | cut -d'.' -f3 | cut -d'-' -f1`
+				if [ "$MINOR" -eq 0 ]; then
+					#3.10.0
+    			BUGPATCH=`uname -r | tr - . | cut -d'.' -f4`
+    			if [ "$BUGPATCH" -lt 693 ]; then
+          	echo 'false'
+          	return
+    			else
+    				#3.10.693 and above
+        		echo 'true'
+        		return
+    			fi
+    		else
+    			#3.10.1 and above
+    			echo 'true'
+    			return
+    		fi
+    	else
+    		#3.11.x
+    		echo 'true'
+    		return
+    	fi
+    fi
+	else
+		#4.x and above
+  	echo 'true'
+  	return
+	fi	
+}
+
+#True if docker engine supports devicemapper. devicemapper is deprecated in docker 18.09.
+function is_devicemapper_supported(){
+	ENCRYPTION_PASSPHRASE=""
+	if [[ $# -eq 1 ]]; then
+		ENCRYPTION_PASSPHRASE=$1
+	fi	
+	#Check version if not found restart docker daemon.
+	VERSION_TEST=`sudo docker version --format '{{.Server.Version}}' 2>/dev/null`
+	RC=$?
+	if [[ $RC -eq 1 ]]; then
+		[[ `which systemctl` ]] && { echo -n "$ENCRYPTION_PASSPHRASE" | sudo systemctl start docker || true ; } || { echo -n "$ENCRYPTION_PASSPHRASE" | sudo service docker start || true ; }
+	fi
+	major=`sudo docker version --format '{{.Server.Version}}' | cut -d'-' -f1 | cut -d'.' -f1`
+	minor=`sudo docker version --format '{{.Server.Version}}' | cut -d'-' -f1 | cut -d'.' -f2 | sed 's/^0*//'`
+	if [ "$major" -lt 18 ]; then
+		echo 'true'
+	else
+		if [ "$minor" -lt 9 ]; then
+			echo 'true'
+		else
+			echo 'false'
+		fi
+	fi
+}
 EndOfFile
    destination = "./advanced-content-runtime/utilities.sh"
  }
@@ -1554,6 +1686,9 @@ function docker_disk()
 {
   DISK_NAME=$(find_disk 1) # find the largest disk for formatting
   sudo mkdir -p /etc/docker/
+  DEVICEMAPPER_SUPPORTED=$1
+  if [[ $DEVICEMAPPER_SUPPORTED == "true" ]]; then
+    echo "Use storage driver devicemapper."
   # Ubuntu 14.04 fails to mount the disk because of a downlevel API, do not process the disk if present
   if [[ ! -z "$DISK_NAME" ]] && [[ `sudo lvcreate --help | egrep wipesignatures` ]] ; then
      echo "Obtained disk name: $DISK_NAME"
@@ -1568,6 +1703,27 @@ function docker_disk()
   else
      echo -e "{\n\"storage-driver\": \"devicemapper\"\n}" | sudo tee /etc/docker/daemon.json
   fi
+  else
+    echo "Use storage driver overlay2."
+	  if [[ ! -z "$DISK_NAME" ]] ; then
+	  	 sudo cp -au /var/lib/docker /var/lib/docker.bk
+	     echo "Obtained disk name: $DISK_NAME"
+	     DOCKER_MOUNT_POINT='/var/lib/docker'
+	     ONE=1
+	     DOCKER_DISK_NAME=$DISK_NAME$ONE
+	     (echo n; echo p; echo " "; echo " "; echo " "; echo t; echo 8e; echo w;) | sudo fdisk $DISK_NAME
+	     sudo mkfs.ext4 $DOCKER_DISK_NAME
+	     echo $DOCKER_DISK_NAME  $DOCKER_MOUNT_POINT   ext4    defaults    0 0 | sudo tee -a $FSTAB_FILE
+	     sudo mount $DOCKER_DISK_NAME  $DOCKER_MOUNT_POINT
+	  fi
+	  KERNEL_VERSION=`uname -r | cut -d'.' -f1`
+	  PLATFORM=$(get_platform)	  
+	  if [[ $KERNEL_VERSION -lt 4 ]] && [[ $PLATFORM == *"redhat"* ]]; then  	
+	     echo -e "{\n\"storage-driver\": \"overlay2\",\n\"storage-opts\": [\"overlay2.override_kernel_check=true\"]\n}" | sudo tee /etc/docker/daemon.json
+	  else
+         echo -e "{\n\"storage-driver\": \"overlay2\"\n}" | sudo tee /etc/docker/daemon.json	  	
+	  fi
+  fi	   		    	  
 }
 
 function begin_message() {
@@ -1794,8 +1950,9 @@ if [[ ! `sudo ls /etc/docker/daemon.json 2>/dev/null` ]]; then
   sudo groupadd docker || echo ""
   sudo usermod -aG docker $USER # even though we have added the user to the group, it will not take effect on this pid/process
   # Check to see if the docker service is running
+  DEVICEMAPPER_SUPPORTED=$(is_devicemapper_supported $ENCRYPTION_PASSPHRASE)
   [[ `which systemctl` ]] && { echo -n "$ENCRYPTION_PASSPHRASE" | sudo systemctl stop docker || true ; } || { echo -n "$ENCRYPTION_PASSPHRASE" | sudo service docker stop || true ; }
-  docker_disk
+  docker_disk $DEVICEMAPPER_SUPPORTED
   [[ `which systemctl` ]] && { echo -n "$ENCRYPTION_PASSPHRASE" | sudo systemctl start docker || true ; } || { echo -n "$ENCRYPTION_PASSPHRASE" | sudo service docker start || true ; }
 fi
 end_message "Successful"
