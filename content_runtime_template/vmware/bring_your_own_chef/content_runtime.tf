@@ -1882,7 +1882,7 @@ while IFS='' read -r parameter || [[ -n "$parameter" ]]; do
         [[ $parameter =~ ^-de|--docker_ee_repo= ]] && { DOCKER_EE_REPO=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-dc|--docker_configuration= ]] && { CONFIGURATION=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-bc|--byochef= ]] && { BYOCHEF=`echo $parameter|cut -f2- -d'='| tr '[:upper:]' '[:lower:]'`; continue;  };
-        [[ $parameter =~ ^-of|--offline_installation= ]] && { OFFLINE_INSTALL=`echo $parameter|cut -f2- -d'='`| tr '[:upper:]' '[:lower:]'; continue;  };
+        [[ $parameter =~ ^-of|--offline_installation= ]] && { OFFLINE_INSTALL=`echo $parameter|cut -f2- -d'='| tr '[:upper:]' '[:lower:]'`; continue;  };
         [[ $parameter =~ ^-ca|--chef_admin= ]] && { CHEF_ADMIN=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-ch|--chef_host= ]] && { CHEF_HOST=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-co|--chef_org= ]] && { CHEF_ORG=`echo $parameter|cut -f2- -d'='`; continue;  };
