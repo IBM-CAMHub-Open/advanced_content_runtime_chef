@@ -157,14 +157,14 @@
 {
   "name": "chef_client_path",
   "type": "string",
-  "description": "Path to Chef client installation binaries.",
+  "description": "Provide the local path to chef client installation binaries. Must be in the following format /path/to/chef-clients without trailing slash.",
   "default": "",
   "hidden": false,
   "label": "Chef Client Installation Binaries Path",
   "group_name": "docker_chef_settings",
   "secured": false,
   "system": false,
-  "required": false,
+  "required": true,
   "immutable": false
 },
 {

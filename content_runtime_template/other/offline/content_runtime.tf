@@ -173,6 +173,11 @@ CLOUD_PROVIDER=$(sudo dmidecode -s bios-version)
 
 if [[ "$PARAM_OFFLINE" == "true" ]]; then
   echo "[*] Starting offline installation"
+  if [[ $PLATFORM == *"ubuntu"* ]]; then
+  	PACKAGE_MANAGER=apt-get
+  else
+  	PACKAGE_MANAGER=yum
+  fi
 else
   echo "[*] Updating packages"
   # Check if the script is being run as root
@@ -2193,6 +2198,7 @@ if [[ "$INSTALL_COOKBOOKS" == "true" ]]; then
     docker cp $COOKBOOKS_FILE camc-pattern-manager:/var/cookbooks/
     docker exec camc-pattern-manager tar -xvf /var/cookbooks/$COOKBOOKS_TAR -C /var/cookbooks > /dev/null
     echo "[*] Loading cookbooks"
+    sleep 20 # The chef server needs a little time before servicing requests
     curl --request POST -k -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization:Bearer $PATTERN_MGR_ACCESS_TOKEN" https://localhost:5443/v1/upload/chef -d '{"cookbooks":"True","roles":"True","source_repos":"file:///var/cookbooks/", "repos":"cookbook_*"}'
   else
     if [[ $CONFIGURATION = "single-node" ]] ; then
