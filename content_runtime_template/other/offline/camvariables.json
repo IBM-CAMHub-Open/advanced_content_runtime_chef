@@ -604,7 +604,7 @@
 {
   "name": "installer_docker",
   "type": "string",
-  "description": "Optional file location of a docker .deb/.rpm file to be installed on the system",
+  "description": "Optional file location of a docker .deb/.rpm file to be installed on the system. If the installation package has been stored within the content runtime system, for example, docker.deb saved to /tmp, then the input would be file:///tmp/docker.deb. If the installation package is stored in a server with HTTP access, then the input would be http://<server_IP>/path/to/docker.deb.",
   "default": "",
   "hidden": false,
   "label": "Docker installation file",
@@ -617,7 +617,7 @@
 {
   "name": "installer_docker_compose",
   "type": "string",
-  "description": "Optional file location of a Docker Compose executable file to be installed on the system",
+  "description": "Optional file location of a Docker Compose executable file to be installed on the system. If the installation package has been stored within the content runtime system, for example, docker-compose saved to /tmp, then the input would be file:///tmp/docker-compose. If the installation package is stored in a server with HTTP access, then the input would be http://<server_IP>/path/to/docker-compose.",
   "default": "",
   "hidden": false,
   "label": "Docker Compose installation file",
@@ -630,7 +630,7 @@
 {
   "name": "sw_repo_image",
   "type": "string",
-  "description": "Optional file location of the Software Repository Docker image to be loaded to the system",
+  "description": "Optional file location of the Software Repository Docker image to be loaded to the system. If the installation package has been stored within the content runtime system, for example, camc-sw-repo saved to /tmp, then the input would be file:///tmp/camc-sw-repo. If the installation package is stored in a server with HTTP access, then the input would be http://<server_IP>/path/to/camc-sw-repo.",
   "default": "",
   "hidden": false,
   "label": "Software Repository Docker image location",
@@ -643,7 +643,7 @@
 {
   "name": "pm_image",
   "type": "string",
-  "description": "Optional file location of the Pattern Manager Docker image to be loaded to the system",
+  "description": "Optional file location of the Pattern Manager Docker image to be loaded to the system. If the installation package has been stored within the content runtime system, for example, camc-pattern-manager saved to /tmp, then the input would be file:///tmp/camc-pattern-manager. If the installation package is stored in a server with HTTP access, then the input would be http://<server_IP>/path/to/camc-pattern-manager.",
   "default": "",
   "hidden": false,
   "label": "Pattern Manager Docker image location",
@@ -656,7 +656,7 @@
 {
   "name": "chef_version",
   "type": "string",
-  "description": "Binary installation file for Chef server.  Note: the installation package is OS dependent. This entry may contain an http://, https://, or file:// link to an installation package (.deb/.rpm).",
+  "description": "Binary installation file for Chef server.  Note: the installation package is OS dependent. This entry may contain an http://, https://, or file:// link to an installation package (.deb/.rpm). If the installation package has been stored within the content runtime system, for example, chef.rpm saved to /tmp, then the input would be file:///tmp/chef.rpm. If the installation package is stored in a server with HTTP access, then the input would be http://<server_IP>/path/to/chef.rpm.",
   "default": "",
   "hidden": false,
   "label": "Chef Server Installation File",

@@ -1,6 +1,6 @@
  {
     "name": "Bring your own VM - CAM Content Runtime with existing Chef Server",
-    "description": "Bring your own VM Resource to instantiate CAM Content Runtime.",
+    "description": "Bring your own VM Resource to instantiate CAM Content Runtime with existing Chef Server. This template supports both online and offline CAM Content Runtime installation.",
     "version": "2.3",
     "imageUrl": "./assets/svg/IBM_WebSphere_Standalone.svg",
     "image": "tp_WAS_standalone.png",
@@ -25,7 +25,7 @@
     "metadata": {
       "displayName": "CAM Content Runtime with existing Chef Server",
       "providerDisplayName": "Other",
-      "longDescription": "Deploy the Content Runtime for CAM",
+      "longDescription": "Deploy the online or offline Content Runtime for CAM with existing Chef Server",
       "bullets": [
        {
          "title": "Clouds",
