@@ -5,6 +5,11 @@
 
 ### Begin Input
 
+variable "ibm_stack_name" {
+	type = "string"
+	default = "unknown"
+}
+
  variable "docker_registry_token" { type = "string" }
  variable "docker_registry" { type = "string" }
  variable "docker_registry_camc_pattern_manager_version" { type = "string" }
@@ -2349,4 +2354,5 @@ output "installer_docker_compose" { value = "${var.installer_docker_compose}"}
 output "sw_repo_image" { value = "${var.sw_repo_image}"}
 output "pm_image" { value = "${var.pm_image}"}
 output "chef_version" { value = "${var.chef_version}"}
+output "ibm_stack_name" { value = "${var.ibm_stack_name}"}
 ### End Output

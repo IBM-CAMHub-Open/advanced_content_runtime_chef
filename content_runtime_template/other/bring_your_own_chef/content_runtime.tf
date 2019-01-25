@@ -5,6 +5,11 @@
 
 ### Begin Input
 
+variable "ibm_stack_name" {
+	type = "string"
+	default = "unknown"
+}
+
 variable "docker_registry_token" {
   type = "string"
 }
@@ -2691,5 +2696,8 @@ output "chef_version" {
   value = "${var.chef_version}"
 }
 
+output "ibm_stack_name" {
+ value = "${var.ibm_stack_name}"
+}
 ### End Output
 

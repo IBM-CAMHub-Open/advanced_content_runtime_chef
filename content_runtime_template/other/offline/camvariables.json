@@ -1,5 +1,12 @@
 {
-  "output_datatype": "advanced_content_runtime_chef",
+  "output_datatypes": [
+  	{
+  		"name": "advanced_content_runtime_chef",
+		"dataobject": {
+        	"name": "${template_output_params.ibm_stack_name}"
+      	}  		
+  	}
+  ],
   "input_groups": [
     {
       "name": "cloud_provider",
@@ -1329,6 +1336,17 @@
   "system": true,
   "required": true,
   "immutable": true
-}
+},
+{
+  "name": "ibm_stack_name",
+  "type": "string",
+  "description": "Stack name.",
+  "hidden": false,
+  "label": "Stack name",
+  "group_name": "content_template_output",
+  "secured": false,
+  "required": true,
+  "immutable": false
+}  
 ]
 }

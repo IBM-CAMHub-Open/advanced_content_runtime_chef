@@ -3,6 +3,11 @@
 # @ Copyright IBM Corporation 2016, 2017 All Rights Reserved
 # US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
+variable "ibm_stack_name" {
+	type = "string"
+	default = "unknown"
+}
+
 variable "docker_registry_token" {
   type = "string"
 }
@@ -2860,4 +2865,8 @@ output "pm_image" {
 
 output "chef_version" {
   value = "${var.chef_version}"
+}
+
+output "ibm_stack_name" {
+ value = "${var.ibm_stack_name}"
 }
