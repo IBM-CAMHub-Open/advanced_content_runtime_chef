@@ -174,6 +174,11 @@ variable "aws_instance_type" {
   type = "string"
 }
 
+variable "aws_ami_id" {
+  type = "string"
+  default = ""
+}
+
 variable "aws_region" {
   type = "string"
 }
@@ -270,7 +275,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "singlenode" {
-  ami                         = "${data.aws_ami.ubuntu_1604.id}"
+  ami                         = "${ length(var.aws_ami_id) > 0 ? var.aws_ami_id : data.aws_ami.ubuntu_1604.id}"
   instance_type               = "${var.aws_instance_type}"
   key_name                    = "${aws_key_pair.internal_public_key.id}"
   vpc_security_group_ids      = ["${var.aws_security_group}"]

@@ -654,6 +654,19 @@
       "immutable": false
     },
     {
+      "name": "aws_ami_id",
+      "type": "string",
+      "description": "AMI ID used as the base operating system for Content Runtime VM",
+      "default": "",
+      "hidden": false,
+      "label": "Amazon AMI ID",
+      "group_name": "cloud_provider",
+      "secured": false,
+      "system": false,
+      "required": false,
+      "immutable": false
+    },       
+    {
       "name": "aws_instance_type",
       "type": "string",
       "description": "The type of the Amazon EC2 Instance. The default setting is the recommended size for running the Content Runtime.",
