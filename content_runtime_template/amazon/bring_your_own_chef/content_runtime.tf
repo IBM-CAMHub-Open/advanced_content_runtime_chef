@@ -235,6 +235,14 @@ variable "bastion_password" {
   type = "string"
 }
 
+###
+#FIPS enablement
+###
+variable "enable_fips"{
+	type    = "string"
+	default = "false"
+}
+
 ### End Input Section
 
 provider "tls" {
@@ -1620,6 +1628,7 @@ EndOfFile
     environment:
       - PM_CONFIG=/opt/ibm/pattern-manager/config/config.json
       - PATTERN_MGR_FQDN=$PATTERN_MGR_FQDN
+      - FIPS_ENABLED=$ENABLE_FIPS      
     ports:
       - "5443:443"
     extra_hosts:
@@ -1650,6 +1659,7 @@ EndOfFile
       - SOFTWARE_REPO_FQDN=$SOFTWARE_REPO_FQDN
       - SOFTWARE_REPO_PORT=$SOFTWARE_REPO_PORT
       - SOFTWARE_REPO_SECURE_PORT=$SOFTWARE_REPO_SECURE_PORT
+      - FIPS_ENABLED=$ENABLE_FIPS
     ports:
       - "$SOFTWARE_REPO_PORT:$SOFTWARE_REPO_PORT"
       - "$SOFTWARE_REPO_SECURE_PORT:$SOFTWARE_REPO_SECURE_PORT"
@@ -1964,6 +1974,13 @@ if [[ $# -gt 0 ]] ; then
      done
 fi
 
+#Store kernel FIPS value
+KERNEL_FIPS_ENABLED=0
+if [[ -f /proc/sys/crypto/fips_enabled ]] &&  [[ `head -n 1 /proc/sys/crypto/fips_enabled` -eq 1 ]]
+then
+	KERNEL_FIPS_ENABLED=1
+fi
+
 # Set the defaults of the script
 DOCKER_REGISTRY="orpheus-local-docker.artifactory.swg-devops.com"
 DOCKER_IMAGE_PATH="opencontent"
@@ -2010,6 +2027,7 @@ IM_REPO_USER="repouser"
 
 PATTERN_MGR=""
 PATTERN_MGR_FQDN=""
+ENABLE_FIPS=""
 PATTERN_MGR_VERSION=latest
 PATTERN_MGR_ADMIN_TOKEN=""
 PATTERN_MGR_ACCESS_TOKEN=""
@@ -2069,6 +2087,7 @@ while IFS='' read -r parameter || [[ -n "$parameter" ]]; do
         [[ $parameter =~ ^-sr|--software_repo= ]] && { SOFTWARE_REPO=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-sp|--software_repo_port= ]] && { SOFTWARE_REPO_PORT=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-sp|--software_repo_secure_port= ]] && { SOFTWARE_REPO_SECURE_PORT=`echo $parameter|cut -f2- -d'='`; continue;  };
+        [[ $parameter =~ ^-ef|--enable_fips= ]] && { ENABLE_FIPS=`echo $parameter|cut -f2- -d'='`; continue;  };        
         [[ $parameter =~ ^-su|--software_repo_user= ]] && { SOFTWARE_REPO_USER=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-sp|--software_repo_pass= ]] && { SOFTWARE_REPO_PASS=`echo $parameter|cut -f2- -d'='`; continue;  };
         [[ $parameter =~ ^-ip|--im_repo_pass= ]] && { IM_REPO_PASS=`echo $parameter|cut -f2- -d'='`; continue;  };
@@ -2239,6 +2258,16 @@ if [[ ! -e $parmdir/chef_setup.done ]]; then
       chmod +x $runtimepath/setupchef.sh
       sudo cp $runtimepath/setupchef.sh /opt/
       sudo cp $runtimepath/chef-server.rb /opt/
+      sudo cp /etc/opscode/chef-server.rb /etc/opscode/chef-server.rb.bak
+	  if [[ $KERNEL_FIPS_ENABLED -eq 1 ]]
+      then
+        if [[ $PLATFORM == *"ubuntu"* ]]; then
+        	echo "OS is Ubuntu. Do not configure Chef server FIPS."
+        else
+        	echo "Configure Chef server FIPS."
+      		sudo echo "fips true" >> /opt/chef-server.rb
+        fi
+      fi            
       sudo -E /opt/setupchef.sh
     fi
   fi
@@ -2354,7 +2383,15 @@ if [[ ! -z "$SOFTWARE_REPO_PASS" ]];  then
     echo "creating Auth file directory and auth file"
     sudo mkdir -p $AUTH_FILE_PATH
     echo -n "$SOFTWARE_REPO_USER:" | sudo tee $AUTH_FILE_PATH/.secure_softwarerepo
-    echo $SOFTWARE_REPO_PASS | openssl passwd -apr1 -stdin | sudo tee --append $AUTH_FILE_PATH/.secure_softwarerepo
+    if [[ $KERNEL_FIPS_ENABLED -eq 1 ]]
+    then
+    	echo "Kernel FIPS enabled use FIPS compatiable hashing"
+    	echo -n "{SHA}"  | sudo tee --append $AUTH_FILE_PATH/.secure_softwarerepo
+    	echo -n $SOFTWARE_REPO_PASS | openssl dgst -sha1 -binary | base64 | sudo tee --append $AUTH_FILE_PATH/.secure_softwarerepo
+    else    
+    	echo "Kernel FIPS disabled use non-FIPS compatiable hashing"
+    	echo $SOFTWARE_REPO_PASS | openssl passwd -apr1 -stdin | sudo tee --append $AUTH_FILE_PATH/.secure_softwarerepo
+    fi    	
 else
     echo "Software Repository remains unchanged"
 fi
@@ -2393,6 +2430,7 @@ sed -i.bak "s|\$CHEF_ADMIN|$CHEF_ADMIN|; \
     s|\$SOFTWARE_REPO_SECURE_PORT|$SOFTWARE_REPO_SECURE_PORT|g; \
     s|\$SOFTWARE_REPO_VERSION|$SOFTWARE_REPO_VERSION|; \
     s|\$PATTERN_MGR_FQDN|$PATTERN_MGR_FQDN|; \
+    s|\$ENABLE_FIPS|$ENABLE_FIPS|; \
     s|\$PATTERN_MGR_VERSION|$PATTERN_MGR_VERSION|; \
     s|\$DOCKER_REGISTRY_PATH|$DOCKER_REGISTRY_PATH|; \
     s|\$DOCKER_REGISTRY|$DOCKER_REGISTRY|" \
@@ -2540,7 +2578,7 @@ resource "null_resource" "call_launcher" {
     inline = [
       "chmod 775 ./advanced-content-runtime/launch-docker-compose.sh",
       "chmod 775 ./advanced-content-runtime/image-upgrade.sh",
-      "bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='\"'${var.docker_registry_token}'\"' --nfs_mount_point='\"'${var.nfs_mount}'\"' --encryption_passphrase='\"'${var.encryption_passphrase}'\"' --software_repo_user='\"'${var.ibm_sw_repo_user}'\"' --software_repo_pass='\"'${var.ibm_sw_repo_password}'\"' --im_repo_user='\"'${var.ibm_im_repo_user_hidden}'\"' --im_repo_pass='\"'${var.ibm_im_repo_password_hidden}'\"'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='\"'${var.ibm_sw_repo_port}'\"' --software_repo_secure_port='\"'${var.ibm_sw_repo_secure_port}'\"' --pattern_mgr=pattern --ibm_contenthub_git_host='\"'${var.ibm_contenthub_git_host}'\"' --ibm_contenthub_git_organization='\"'${var.ibm_contenthub_git_organization}'\"' --ibm_openhub_git_organization='\"'${var.ibm_openhub_git_organization}'\"' --chef_org='\"'${var.chef_org}'\"' --chef_admin='\"'${var.chef_admin}'\"' --chef_fqdn='\"'${var.chef_fqdn}'\"' --chef_ip='\"'${var.chef_ip}'\"' --chef_pem='\"'${var.chef_pem}'\"' --docker_registry='\"'${var.docker_registry}'\"' --chef_version=${var.chef_version} --chef_client_version='\"'${var.chef_client_version}'\"' --chef_client_path='\"'${var.chef_client_path}'\"' --ibm_pm_access_token='\"'${var.ibm_pm_access_token}'\"' --ibm_pm_admin_token='\"'${var.ibm_pm_admin_token}'\"' --camc-sw-repo_version='\"'${var.docker_registry_camc_sw_repo_version}'\"' --docker_ee_repo='\"'${var.docker_ee_repo}'\"' --camc-pattern-manager_version='\"'${var.docker_registry_camc_pattern_manager_version}'\"' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='\"'${var.ibm_pm_public_ssh_key_name}'\"' --ibm_pm_private_ssh_key='\"'${var.ibm_pm_private_ssh_key}'\"' --ibm_pm_public_ssh_key='\"'${var.ibm_pm_public_ssh_key}'\"' --user_public_ssh_key='\"'${var.user_public_ssh_key}'\"' --prereq_strictness='\"'${var.prereq_strictness}'\"' --ip_address='\"'${var.ipv4_address}'\"' --template_timestamp='\"'${var.template_timestamp_hidden}'\"' --installer_docker='\"'${var.installer_docker}'\"' --installer_docker_compose='\"'${var.installer_docker_compose}'\"' --sw_repo_image='\"'${var.sw_repo_image}'\"' --pm_image='\"'${var.pm_image}'\"' --template_debug='\"'${var.template_debug}'\"' --portable_private_ip='\"'${var.portable_private_ip}'\"' --byochef='\"'${var.byochef}'\"' --offline_installation='\"'${var.offline_installation}'\"' --install_cookbooks='\"'${var.install_cookbooks}'\"'\"",
+      "bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='\"'${var.docker_registry_token}'\"' --nfs_mount_point='\"'${var.nfs_mount}'\"' --encryption_passphrase='\"'${var.encryption_passphrase}'\"' --software_repo_user='\"'${var.ibm_sw_repo_user}'\"' --software_repo_pass='\"'${var.ibm_sw_repo_password}'\"' --im_repo_user='\"'${var.ibm_im_repo_user_hidden}'\"' --im_repo_pass='\"'${var.ibm_im_repo_password_hidden}'\"'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='\"'${var.ibm_sw_repo_port}'\"' --software_repo_secure_port='\"'${var.ibm_sw_repo_secure_port}'\"' --enable_fips='\"'${var.enable_fips}'\"' --pattern_mgr=pattern --ibm_contenthub_git_host='\"'${var.ibm_contenthub_git_host}'\"' --ibm_contenthub_git_organization='\"'${var.ibm_contenthub_git_organization}'\"' --ibm_openhub_git_organization='\"'${var.ibm_openhub_git_organization}'\"' --chef_org='\"'${var.chef_org}'\"' --chef_admin='\"'${var.chef_admin}'\"' --chef_fqdn='\"'${var.chef_fqdn}'\"' --chef_ip='\"'${var.chef_ip}'\"' --chef_pem='\"'${var.chef_pem}'\"' --docker_registry='\"'${var.docker_registry}'\"' --chef_version=${var.chef_version} --chef_client_version='\"'${var.chef_client_version}'\"' --chef_client_path='\"'${var.chef_client_path}'\"' --ibm_pm_access_token='\"'${var.ibm_pm_access_token}'\"' --ibm_pm_admin_token='\"'${var.ibm_pm_admin_token}'\"' --camc-sw-repo_version='\"'${var.docker_registry_camc_sw_repo_version}'\"' --docker_ee_repo='\"'${var.docker_ee_repo}'\"' --camc-pattern-manager_version='\"'${var.docker_registry_camc_pattern_manager_version}'\"' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='\"'${var.ibm_pm_public_ssh_key_name}'\"' --ibm_pm_private_ssh_key='\"'${var.ibm_pm_private_ssh_key}'\"' --ibm_pm_public_ssh_key='\"'${var.ibm_pm_public_ssh_key}'\"' --user_public_ssh_key='\"'${var.user_public_ssh_key}'\"' --prereq_strictness='\"'${var.prereq_strictness}'\"' --ip_address='\"'${var.ipv4_address}'\"' --template_timestamp='\"'${var.template_timestamp_hidden}'\"' --installer_docker='\"'${var.installer_docker}'\"' --installer_docker_compose='\"'${var.installer_docker_compose}'\"' --sw_repo_image='\"'${var.sw_repo_image}'\"' --pm_image='\"'${var.pm_image}'\"' --template_debug='\"'${var.template_debug}'\"' --portable_private_ip='\"'${var.portable_private_ip}'\"' --byochef='\"'${var.byochef}'\"' --offline_installation='\"'${var.offline_installation}'\"' --install_cookbooks='\"'${var.install_cookbooks}'\"'\"",
     ]
   }
 } # End of null_resource
