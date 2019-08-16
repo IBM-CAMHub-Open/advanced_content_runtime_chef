@@ -2240,9 +2240,9 @@ if [[ "$INSTALL_COOKBOOKS" == "true" ]]; then
   if [[ -e $COOKBOOKS_FILE ]]; then
     echo "[*] Copying cookbooks to Pattern Manager"
     COOKBOOKS_TAR=$(basename $COOKBOOKS_FILE)
-    docker exec camc-pattern-manager mkdir /var/cookbooks
+    docker exec camc-pattern-manager sudo mkdir /var/cookbooks
     docker cp $COOKBOOKS_FILE camc-pattern-manager:/var/cookbooks/
-    docker exec camc-pattern-manager tar -xvf /var/cookbooks/$COOKBOOKS_TAR -C /var/cookbooks > /dev/null
+    docker exec camc-pattern-manager sudo tar -xvf /var/cookbooks/$COOKBOOKS_TAR -C /var/cookbooks > /dev/null
     echo "[*] Loading cookbooks"
     sleep 20 # The chef server needs a little time before servicing requests
     curl --request POST -k -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization:Bearer $PATTERN_MGR_ACCESS_TOKEN" https://localhost:5443/v1/upload/chef -d '{"cookbooks":"True","roles":"True","source_repos":"file:///var/cookbooks/", "repos":"cookbook_*"}'
