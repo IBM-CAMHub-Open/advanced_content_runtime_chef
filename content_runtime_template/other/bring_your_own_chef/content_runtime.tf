@@ -26,6 +26,11 @@ variable "docker_registry_camc_sw_repo_version" {
   type = "string"
 }
 
+locals{
+	docker_registry_camc_pattern_manager_version="2.0-current"
+	docker_registry_camc_sw_repo_version="2.0-current"
+}
+
 variable "ibm_sw_repo_user" {
   type = "string"
 }
@@ -2512,7 +2517,7 @@ resource "null_resource" "call_launcher" {
     inline = [
       "chmod 775 ./advanced-content-runtime/launch-docker-compose.sh",
       "chmod 775 ./advanced-content-runtime/image-upgrade.sh",
-      "bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='\"'${var.docker_registry_token}'\"' --nfs_mount_point='\"'${var.nfs_mount}'\"' --encryption_passphrase='\"'${var.encryption_passphrase}'\"' --software_repo_user='\"'${var.ibm_sw_repo_user}'\"' --software_repo_pass='\"'${var.ibm_sw_repo_password}'\"' --im_repo_user='\"'${var.ibm_im_repo_user_hidden}'\"' --im_repo_pass='\"'${var.ibm_im_repo_password_hidden}'\"'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='\"'${var.ibm_sw_repo_port}'\"' --software_repo_secure_port='\"'${var.ibm_sw_repo_secure_port}'\"' --enable_fips='\"'${var.enable_fips}'\"' --pattern_mgr=pattern --ibm_contenthub_git_host='\"'${var.ibm_contenthub_git_host}'\"' --ibm_contenthub_git_organization='\"'${var.ibm_contenthub_git_organization}'\"' --ibm_openhub_git_organization='\"'${var.ibm_openhub_git_organization}'\"' --chef_org='\"'${var.chef_org}'\"' --chef_admin='\"'${var.chef_admin}'\"' --chef_fqdn='\"'${var.chef_fqdn}'\"' --chef_ip='\"'${var.chef_ip}'\"' --chef_pem='\"'${var.chef_pem}'\"' --docker_registry='\"'${var.docker_registry}'\"' --chef_version=${var.chef_version} --chef_client_version='\"'${var.chef_client_version}'\"' --chef_client_path='\"'${var.chef_client_path}'\"' --ibm_pm_access_token='\"'${var.ibm_pm_access_token}'\"' --ibm_pm_admin_token='\"'${var.ibm_pm_admin_token}'\"' --camc-sw-repo_version='\"'${var.docker_registry_camc_sw_repo_version}'\"' --docker_ee_repo='\"'${var.docker_ee_repo}'\"' --camc-pattern-manager_version='\"'${var.docker_registry_camc_pattern_manager_version}'\"' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='\"'${var.ibm_pm_public_ssh_key_name}'\"' --ibm_pm_private_ssh_key='\"'${var.ibm_pm_private_ssh_key}'\"' --ibm_pm_public_ssh_key='\"'${var.ibm_pm_public_ssh_key}'\"' --user_public_ssh_key='\"'${var.user_public_ssh_key}'\"' --prereq_strictness='\"'${var.prereq_strictness}'\"' --ip_address='\"'${var.ipv4_address}'\"' --template_timestamp='\"'${var.template_timestamp_hidden}'\"' --installer_docker='\"'${var.installer_docker}'\"' --installer_docker_compose='\"'${var.installer_docker_compose}'\"' --sw_repo_image='\"'${var.sw_repo_image}'\"' --pm_image='\"'${var.pm_image}'\"' --template_debug='\"'${var.template_debug}'\"' --portable_private_ip='\"'${var.portable_private_ip}'\"' --byochef='\"'${var.byochef}'\"' --offline_installation='\"'${var.offline_installation}'\"' --install_cookbooks='\"'${var.install_cookbooks}'\"'\"",
+      "bash -c \"./advanced-content-runtime/launch-docker-compose.sh ${var.network_visibility} --docker_registry_token='\"'${var.docker_registry_token}'\"' --nfs_mount_point='\"'${var.nfs_mount}'\"' --encryption_passphrase='\"'${var.encryption_passphrase}'\"' --software_repo_user='\"'${var.ibm_sw_repo_user}'\"' --software_repo_pass='\"'${var.ibm_sw_repo_password}'\"' --im_repo_user='\"'${var.ibm_im_repo_user_hidden}'\"' --im_repo_pass='\"'${var.ibm_im_repo_password_hidden}'\"'  --chef_host=chef-server --software_repo=software-repo --software_repo_port='\"'${var.ibm_sw_repo_port}'\"' --software_repo_secure_port='\"'${var.ibm_sw_repo_secure_port}'\"' --enable_fips='\"'${var.enable_fips}'\"' --pattern_mgr=pattern --ibm_contenthub_git_host='\"'${var.ibm_contenthub_git_host}'\"' --ibm_contenthub_git_organization='\"'${var.ibm_contenthub_git_organization}'\"' --ibm_openhub_git_organization='\"'${var.ibm_openhub_git_organization}'\"' --chef_org='\"'${var.chef_org}'\"' --chef_admin='\"'${var.chef_admin}'\"' --chef_fqdn='\"'${var.chef_fqdn}'\"' --chef_ip='\"'${var.chef_ip}'\"' --chef_pem='\"'${var.chef_pem}'\"' --docker_registry='\"'${var.docker_registry}'\"' --chef_version=${var.chef_version} --chef_client_version='\"'${var.chef_client_version}'\"' --chef_client_path='\"'${var.chef_client_path}'\"' --ibm_pm_access_token='\"'${var.ibm_pm_access_token}'\"' --ibm_pm_admin_token='\"'${var.ibm_pm_admin_token}'\"' --camc-sw-repo_version='\"'${local.docker_registry_camc_sw_repo_version}'\"' --docker_ee_repo='\"'${var.docker_ee_repo}'\"' --camc-pattern-manager_version='\"'${local.docker_registry_camc_pattern_manager_version}'\"' --docker_configuration=single-node --ibm_pm_public_ssh_key_name='\"'${var.ibm_pm_public_ssh_key_name}'\"' --ibm_pm_private_ssh_key='\"'${var.ibm_pm_private_ssh_key}'\"' --ibm_pm_public_ssh_key='\"'${var.ibm_pm_public_ssh_key}'\"' --user_public_ssh_key='\"'${var.user_public_ssh_key}'\"' --prereq_strictness='\"'${var.prereq_strictness}'\"' --ip_address='\"'${var.ipv4_address}'\"' --template_timestamp='\"'${var.template_timestamp_hidden}'\"' --installer_docker='\"'${var.installer_docker}'\"' --installer_docker_compose='\"'${var.installer_docker_compose}'\"' --sw_repo_image='\"'${var.sw_repo_image}'\"' --pm_image='\"'${var.pm_image}'\"' --template_debug='\"'${var.template_debug}'\"' --portable_private_ip='\"'${var.portable_private_ip}'\"' --byochef='\"'${var.byochef}'\"' --offline_installation='\"'${var.offline_installation}'\"' --install_cookbooks='\"'${var.install_cookbooks}'\"'\"",
     ]
   }
 } # End of null_resource
@@ -2557,11 +2562,11 @@ output "docker_registry" {
 }
 
 output "docker_registry_camc_pattern_manager_version" {
-  value = "${var.docker_registry_camc_pattern_manager_version}"
+  value = "${local.docker_registry_camc_pattern_manager_version}"
 }
 
 output "docker_registry_camc_sw_repo_version" {
-  value = "${var.docker_registry_camc_sw_repo_version}"
+  value = "${local.docker_registry_camc_sw_repo_version}"
 }
 
 output "ibm_sw_repo_user" {

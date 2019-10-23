@@ -1,4 +1,5 @@
 {
+  "terraform_engine": "~> 0.11.0",
   "input_datatypes": [
     {
       "name": "bastionhost",
@@ -126,7 +127,8 @@
       "secured": true,
       "system": false,
       "required": false,
-      "immutable": false
+      "immutable": false,
+      "default": ""
     },
     {
       "name": "docker_registry",
@@ -266,7 +268,8 @@
       "secured": true,
       "system": false,
       "required": true,
-      "immutable": false
+      "immutable": false,
+      "default": ""
     },
     {
       "name": "enable_fips",
@@ -686,7 +689,8 @@
       "secured": false,
       "system": false,
       "required": false,
-      "immutable": true
+      "immutable": true,
+      "default": ""
     },
     {
       "name": "encryption_passphrase",
@@ -758,7 +762,8 @@
       "secured": false,
       "system": false,
       "required": false,
-      "immutable": false
+      "immutable": false,
+      "default": ""
     }
   ],
   "template_output_params": [
