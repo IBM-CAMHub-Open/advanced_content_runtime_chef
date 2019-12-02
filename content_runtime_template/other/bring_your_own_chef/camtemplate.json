@@ -1,7 +1,7 @@
  {
-    "name": "AWS - CAM Content Runtime with existing Chef Server",
-    "description": "AWS Resource to instantiate CAM Content Runtime.",
-    "version": "2.3",
+    "name": "Bring your own VM - CAM Content Runtime with existing Chef Server",
+    "description": "Bring your own VM Resource to instantiate CAM Content Runtime with existing Chef Server. This template supports both online and offline CAM Content Runtime installation.",
+    "version": "2.6",
     "imageUrl": "./assets/svg/IBM_WebSphere_Standalone.svg",
     "image": "tp_WAS_standalone.png",
     "type": "ContentRuntime",
@@ -9,7 +9,7 @@
     "manifest": {
       "template_type": "Terraform",
       "template_format": "HCL",
-      "template_provider": "Amazon EC2",
+      "template_provider": "Other",
       "template": {
         "templateData": "",
         "templateVariables": "",
@@ -18,18 +18,18 @@
     "template_source": {
       "githubRepoUrl": "",
       "githubAccessToken": "",
-      "relativePathToTemplateFolder": "content_runtime_template/amazon/bring_your_own_chef",
+      "relativePathToTemplateFolder": "content_runtime_template/other/bring_your_own_chef",
       "templateFileName": "content_runtime.tf"
       }
     },
     "metadata": {
       "displayName": "CAM Content Runtime with existing Chef Server",
-      "providerDisplayName": "Amazon EC2",
-      "longDescription": "Deploy the Content Runtime for CAM",
+      "providerDisplayName": "Other",
+      "longDescription": "Deploy the online or offline Content Runtime for CAM with existing Chef Server",
       "bullets": [
        {
          "title": "Clouds",
-         "description": "amazon"
+         "description": "other"
        },
        {
          "title": "Template version",
@@ -37,11 +37,11 @@
        },
        {
          "title": "Operating systems supported",
-         "description": "amazon: Ubuntu 14.4.01 x64"
+         "description": "other: Ubuntu 14.4.01 x64"
        },
        {
          "title": "Topology",
-         "description": "amazon: Single virtual machines"
+         "description": "other: Single virtual machines"
        },
        {
          "title": "Default virtual machine settings",

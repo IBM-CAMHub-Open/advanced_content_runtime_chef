@@ -1,7 +1,7 @@
  {
-    "name": "IBM - CAM Content Runtime with existing Chef Server",
-    "description": "IBM Resource to instantiate CAM Content Runtime.",
-    "version": "2.3",
+    "name": "VMWare - CAM Content Runtime",
+    "description": "VMWare Resource to instantiate CAM Content Runtime.",
+    "version": "2.6",
     "imageUrl": "./assets/svg/IBM_WebSphere_Standalone.svg",
     "image": "tp_WAS_standalone.png",
     "type": "ContentRuntime",
@@ -9,7 +9,7 @@
     "manifest": {
       "template_type": "Terraform",
       "template_format": "HCL",
-      "template_provider": "IBM",
+      "template_provider": "VMware vSphere",
       "template": {
         "templateData": "",
         "templateVariables": "",
@@ -18,18 +18,18 @@
     "template_source": {
       "githubRepoUrl": "",
       "githubAccessToken": "",
-      "relativePathToTemplateFolder": "content_runtime_template/ibm/bring_your_own_chef",
+      "relativePathToTemplateFolder": "content_runtime_template/vmware/public",
       "templateFileName": "content_runtime.tf"
       }
     },
     "metadata": {
-      "displayName": "CAM Content Runtime with existing Chef Server",
-      "providerDisplayName": "IBM",
+      "displayName": "CAM Content Runtime",
+      "providerDisplayName": "VMware vSphere",
       "longDescription": "Deploy the Content Runtime for CAM",
       "bullets": [
        {
          "title": "Clouds",
-         "description": "ibm"
+         "description": "vmware"
        },
        {
          "title": "Template version",
@@ -37,11 +37,11 @@
        },
        {
          "title": "Operating systems supported",
-         "description": "ibm: Ubuntu 14.4.01 x64"
+         "description": "vmware: Ubuntu 14.4.01 x64"
        },
        {
          "title": "Topology",
-         "description": "ibm: Single virtual machines"
+         "description": "vmware: Single virtual machines"
        },
        {
          "title": "Default virtual machine settings",

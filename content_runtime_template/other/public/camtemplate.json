@@ -1,7 +1,7 @@
  {
-    "name": "VMWare - CAM Content Runtime",
-    "description": "VMWare Resource to instantiate CAM Content Runtime.",
-    "version": "2.3",
+    "name": "Bring your own VM - CAM Content Runtime",
+    "description": "Bring your own VM Resource to instantiate CAM Content Runtime.",
+    "version": "2.6",
     "imageUrl": "./assets/svg/IBM_WebSphere_Standalone.svg",
     "image": "tp_WAS_standalone.png",
     "type": "ContentRuntime",
@@ -9,7 +9,7 @@
     "manifest": {
       "template_type": "Terraform",
       "template_format": "HCL",
-      "template_provider": "VMware vSphere",
+      "template_provider": "Other",
       "template": {
         "templateData": "",
         "templateVariables": "",
@@ -18,18 +18,18 @@
     "template_source": {
       "githubRepoUrl": "",
       "githubAccessToken": "",
-      "relativePathToTemplateFolder": "content_runtime_template/vmware/public",
+      "relativePathToTemplateFolder": "content_runtime_template/other/public",
       "templateFileName": "content_runtime.tf"
       }
     },
     "metadata": {
       "displayName": "CAM Content Runtime",
-      "providerDisplayName": "VMware vSphere",
+      "providerDisplayName": "Other",
       "longDescription": "Deploy the Content Runtime for CAM",
       "bullets": [
        {
          "title": "Clouds",
-         "description": "vmware"
+         "description": "other"
        },
        {
          "title": "Template version",
@@ -37,11 +37,11 @@
        },
        {
          "title": "Operating systems supported",
-         "description": "vmware: Ubuntu 14.4.01 x64"
+         "description": "other: Ubuntu 14.4.01 x64"
        },
        {
          "title": "Topology",
-         "description": "vmware: Single virtual machines"
+         "description": "other: Single virtual machines"
        },
        {
          "title": "Default virtual machine settings",
