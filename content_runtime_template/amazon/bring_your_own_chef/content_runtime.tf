@@ -288,7 +288,7 @@ data "aws_ami" "ubuntu_1604" {
 }
 
 provider "aws" {
-  version = "~> 1.2"
+  version = "~> 2.0"
   region  = "${var.aws_region}"
 }
 
