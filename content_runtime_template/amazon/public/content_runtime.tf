@@ -803,8 +803,8 @@ function install_docker() {
         sudo apt-get -y install apt-transport-https ca-certificates software-properties-common
         curl -fsSL $DOCKER_EE_REPO/ubuntu/gpg | sudo apt-key add -
         if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
-        	echo "Install docker ee 18.09."
-        	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-18.09"
+        	echo "Install docker ee 19.03."
+        	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-19.03"
         else
         	echo "Install docker ee 17.03."
         	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-17.03"
@@ -819,8 +819,8 @@ function install_docker() {
           sudo yum install -y yum-utils device-mapper-persistent-data lvm2
           sudo yum-config-manager --add-repo $DOCKER_EE_REPO/rhel/docker-ee.repo
           if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
-          	echo "Install docker ee 18.09."
-          	sudo yum-config-manager --enable docker-ee-stable-18.09
+          	echo "Install docker ee 19.03."
+          	sudo yum-config-manager --enable docker-ee-stable-19.03
           fi
           # Install Docker EE
           sudo yum makecache fast
