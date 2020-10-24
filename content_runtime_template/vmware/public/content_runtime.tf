@@ -334,11 +334,6 @@ variable "enable_fips"{
 	default = "false"
 }
 
-### End Input Section
-
-provider "null" {
-  version = "~> 1.0"
-}
 
 provider "vsphere" {
   version              = "~> 1.3"
