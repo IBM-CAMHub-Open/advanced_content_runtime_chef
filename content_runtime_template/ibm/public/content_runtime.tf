@@ -280,14 +280,6 @@ variable "enable_fips"{
 	default = "false"
 }
 
-provider "tls" {
-  version = "~> 1.0"
-}
-
-provider "null" {
-  version = "~> 1.0"
-}
-
 resource "tls_private_key" "ssh" {
   algorithm = "RSA"
 }

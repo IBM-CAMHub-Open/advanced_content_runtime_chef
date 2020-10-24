@@ -314,10 +314,6 @@ variable "enable_fips"{
 
 ### End Input Section
 
-provider "null" {
-  version = "~> 1.0"
-}
-
 provider "vsphere" {
   version              = "~> 1.3"
   allow_unverified_ssl = true

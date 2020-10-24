@@ -241,10 +241,6 @@ variable "chef_license_agree" {
 
 ### End Input
 
-provider "null" {
-  version = "~> 0.1"
-}
-
 resource "null_resource" "create_dir" {
 
   triggers {
