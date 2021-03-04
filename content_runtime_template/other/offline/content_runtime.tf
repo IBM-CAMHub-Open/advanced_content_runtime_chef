@@ -2092,6 +2092,7 @@ if [[ ! -e $parmdir/chef_setup.done ]]; then
       sudo cp /etc/opscode/chef-server.rb /etc/opscode/chef-server.rb.bak
 	  if [[ $KERNEL_FIPS_ENABLED -eq 1 ]]
       then
+        PLATFORM=$(get_platform)
         if [[ $PLATFORM == *"ubuntu"* ]]; then
         	echo "OS is Ubuntu. Do not configure Chef server FIPS."
         else
