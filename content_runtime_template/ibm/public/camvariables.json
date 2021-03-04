@@ -127,7 +127,8 @@
       "secured": true,
       "system": false,
       "required": false,
-      "immutable": false
+      "immutable": false,
+      "default": ""
     },
     {
       "name": "docker_registry",
