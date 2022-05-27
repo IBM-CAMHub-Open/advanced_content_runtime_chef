@@ -702,8 +702,23 @@ function download_chef_client() {
 function install_edge_docker(){
 	KERNEL_OVERLAY_COMPAT=$(is_kernel_overlay_compat)
 	if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
-		echo "Install latest docker ce."
-    curl -fsSL https://get.docker.com/ | sudo sh
+    if [[ $PLATFORM == *"centos"* ]]; then
+      echo "Install latest docker ce on centos."
+      sudo yum install -y yum-utils
+      sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+      sudo yum install -y -q docker-ce docker-ce-cli containerd.io
+    fi
+    if [[ $PLATFORM == *"ubuntu"* ]]; then
+      echo "Install latest docker ce on ubuntu."
+      sudo apt-get -qq update
+      DEBIAN_FRONTEND=noninteractive
+      sudo apt-get install -y -qq ca-certificates curl gnupg lsb-release
+      DOWNLOAD_URL="https://download.docker.com"
+      curl -fsSL $DOWNLOAD_URL/linux/ubuntu/gpg | gpg --dearmor --yes -o /usr/share/keyrings/docker-archive-keyring.gpg
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] $DOWNLOAD_URL/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      sudo apt-get -qq update
+      sudo apt-get install -y -qq --no-install-recommends docker-ce docker-ce-cli containerd.io
+    fi
   else
   	echo "Install docker ce 18.06."
   	curl -fsSL https://get.docker.com/ | sudo VERSION=18.06 sh
@@ -726,8 +741,8 @@ function install_docker() {
         sudo apt-get -y install apt-transport-https ca-certificates software-properties-common
         curl -fsSL $DOCKER_EE_REPO/ubuntu/gpg | sudo apt-key add -
         if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
-        	echo "Install docker ee 19.03."
-        	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-19.03"
+        	echo "Install docker ee 20.10."
+        	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-20.10"
         else
         	echo "Install docker ee 17.03."
         	sudo add-apt-repository "deb [arch=amd64] "$DOCKER_EE_REPO"/ubuntu $(lsb_release -cs) stable-17.03"
@@ -742,8 +757,8 @@ function install_docker() {
           sudo yum install -y yum-utils device-mapper-persistent-data lvm2
           sudo yum-config-manager --add-repo $DOCKER_EE_REPO/rhel/docker-ee.repo
           if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
-          	echo "Install docker ee 19.03."
-          	sudo yum-config-manager --enable docker-ee-stable-19.03
+          	echo "Install docker ee 20.10."
+          	sudo yum-config-manager --enable docker-ee-stable-20.10
           fi
           # Install Docker EE
           sudo yum makecache fast
