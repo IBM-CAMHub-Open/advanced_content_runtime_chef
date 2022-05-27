@@ -198,7 +198,7 @@
       "name": "chef_client_version",
       "type": "string",
       "description": "Stable version of Chef client to install in the Software Repository.",
-      "default": "14.0.190",
+      "default": "14.1.1",
       "hidden": false,
       "label": "Software Repository Chef Client Version",
       "group_name": "software_repository_settings",

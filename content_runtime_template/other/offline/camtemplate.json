@@ -1,7 +1,7 @@
  {
     "name": "Bring your own VM - CAM Content Runtime Offline Installation",
     "description": "Bring your own VM Resource to instantiate CAM Content Runtime.",
-    "version": "2.6",
+    "version": "2.7",
     "imageUrl": "./assets/svg/IBM_WebSphere_Standalone.svg",
     "image": "tp_WAS_standalone.png",
     "type": "ContentRuntime",
@@ -37,7 +37,7 @@
        },
        {
          "title": "Operating systems supported",
-         "description": "other: Ubuntu 14.4.01 x64"
+         "description": "other: Ubuntu 18.04 x64"
        },
        {
          "title": "Topology",

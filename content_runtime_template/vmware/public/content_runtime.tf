@@ -507,11 +507,9 @@ RESULT=0
 . `dirname $0`/utilities.sh
 
 # Declare the default chef and docker compose versions for their installations
-CHEF_VERSION=12.17.33
-CHEF_CLIENT_VERSION=14.0.190
+CHEF_VERSION=12.18.14
+CHEF_CLIENT_VERSION=14.1.1
 CHEFDK_VERSION=3.0.36
-# CHEF_VERSION=12.11.1
-# CHEF_CLIENT_VERSION=12.17.44
 DOCKER_COMPOSE_VERSION=1.17.1
 
 [[ `dirname $0 | cut -c1` == '/' ]] && runtimepath=`dirname $0/` || runtimepath=`pwd`/`dirname $0`
@@ -865,7 +863,7 @@ function download_chef_client() {
       cp $PARAM_CLIENT_PATH/*.* $CLIENTS_FOLDER/
     fi
   else
-    download_file "Chef client for Ubuntu 16.04" "https://packages.chef.io/files/stable/chef/$CHEF_CLIENT_VERSION/ubuntu/16.04/chef_$CHEF_CLIENT_VERSION-1_amd64.deb" "chef_$CHEF_CLIENT_VERSION-1_amd64.deb"
+    download_file "Chef client for Ubuntu 18.04" "https://packages.chef.io/files/stable/chef/$CHEF_CLIENT_VERSION/ubuntu/18.04/chef_$CHEF_CLIENT_VERSION-1_amd64.deb" "chef_$CHEF_CLIENT_VERSION-1_amd64.deb"
     download_file "Chef client for RHEL 6" "https://packages.chef.io/files/stable/chef/$CHEF_CLIENT_VERSION/el/6/chef-$CHEF_CLIENT_VERSION-1.el6.x86_64.rpm" "chef-$CHEF_CLIENT_VERSION-1.el6.x86_64.rpm"
     download_file "Chef client for RHEL 7" "https://packages.chef.io/files/stable/chef/$CHEF_CLIENT_VERSION/el/7/chef-$CHEF_CLIENT_VERSION-1.el7.x86_64.rpm" "chef-$CHEF_CLIENT_VERSION-1.el7.x86_64.rpm"
     download_file "Chef vault gem" "https://rubygems.org/downloads/chef-vault-2.9.0.gem" "chef-vault-2.9.0.gem"
@@ -879,23 +877,8 @@ function download_chef_client() {
 function install_edge_docker(){
 	KERNEL_OVERLAY_COMPAT=$(is_kernel_overlay_compat)
 	if [[ $KERNEL_OVERLAY_COMPAT == "true" ]]; then
-    if [[ $PLATFORM == *"centos"* ]]; then
-      echo "Install latest docker ce on centos."
-      sudo yum install -y yum-utils
-      sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-      sudo yum install -y -q docker-ce docker-ce-cli containerd.io
-    fi
-    if [[ $PLATFORM == *"ubuntu"* ]]; then
-      echo "Install latest docker ce on ubuntu."
-      sudo apt-get -qq update
-      DEBIAN_FRONTEND=noninteractive
-      sudo apt-get install -y -qq ca-certificates curl gnupg lsb-release
-      DOWNLOAD_URL="https://download.docker.com"
-      curl -fsSL $DOWNLOAD_URL/linux/ubuntu/gpg | gpg --dearmor --yes -o /usr/share/keyrings/docker-archive-keyring.gpg
-      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] $DOWNLOAD_URL/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-      sudo apt-get -qq update
-      sudo apt-get install -y -qq --no-install-recommends docker-ce docker-ce-cli containerd.io
-    fi
+    echo "Install latest docker ce."
+    curl -fsSL https://get.docker.com/ | sudo sh
   else
   	echo "Install docker ce 18.06."
   	curl -fsSL https://get.docker.com/ | sudo VERSION=18.06 sh
@@ -1738,7 +1721,7 @@ parser.add_argument("chef_admin_id")
 parser.add_argument("software_repo_ip")
 parser.add_argument("software_repo_unsecured_port")
 parser.add_argument("target_file", default="pm_config.json")
-parser.add_argument("chef_client_version", default="14.0.202")
+parser.add_argument("chef_client_version", default="14.1.1")
 parser.add_argument("-ph", nargs="?",default="")
 parser.add_argument("-ppr",nargs="?",default="")
 parser.add_argument("-pu", nargs="?",default="")
@@ -2221,10 +2204,8 @@ CHEF_PEM=""
 CHEF_HOST=""
 CHEF_HOST_FQDN=""
 CHEF_ORG="opencontent"
-CHEF_VERSION=12.17.33
-CHEF_CLIENT_VERSION=14.0.190
-# CHEF_VERSION=12.11.1
-# CHEF_CLIENT_VERSION=12.17.44
+CHEF_VERSION=12.18.14
+CHEF_CLIENT_VERSION=14.1.1
 CHEF_CLIENT_PATH=''
 CHEF_URL="https://packages.chef.io/files/stable/chef-server/12.11.1/ubuntu/14.04/chef-server-core_12.11.1-1_amd64.deb"
 CHEF_ADMIN_PASSWORD=''
